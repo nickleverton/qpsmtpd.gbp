@@ -1,0 +1,23 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.30rc2.config-plugindirs/lib/Qpsmtpd.pm qpsmtpd-0.30rc2.configdir/lib/Qpsmtpd.pm
+--- qpsmtpd-0.30rc2.config-plugindirs/lib/Qpsmtpd.pm	2005-07-05 16:48:21.000000000 -0700
++++ qpsmtpd-0.30rc2.configdir/lib/Qpsmtpd.pm	2005-07-06 01:02:43.000000000 -0700
+@@ -118,6 +118,11 @@
+   my $configdir = ($ENV{QMAIL} || '/var/qmail') . '/control';
+   my ($name) = ($0 =~ m!(.*?)/([^/]+)$!);
+   $configdir = "$name/config" if (-e "$name/config/$config");
++  if (exists $ENV{QPSMTPD_CONFIG}) {
++    my $c = $ENV{QPSMTPD_CONFIG};
++    $c = $1 if $c =~ /^(.*)$/; # detaint
++    $configdir = $c if -e "$c/$config";
++  }
+   return $configdir;
+ }
+ 

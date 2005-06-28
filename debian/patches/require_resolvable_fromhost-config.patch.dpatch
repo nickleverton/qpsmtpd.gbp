@@ -1,0 +1,22 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.30rc2.orig/plugins/require_resolvable_fromhost qpsmtpd-0.30rc2.require_resolvable_fromhost/plugins/require_resolvable_fromhost
+--- qpsmtpd-0.30rc2.orig/plugins/require_resolvable_fromhost	2005-03-03 09:28:43.000000000 -0800
++++ qpsmtpd-0.30rc2.require_resolvable_fromhost/plugins/require_resolvable_fromhost	2005-07-08 01:21:01.000000000 -0700
+@@ -11,8 +11,8 @@
+   return DECLINED
+         if ($self->qp->connection->notes('whitelistclient'));
+ 
+-  $sender->format ne "<>"
+-    and $self->qp->config("require_resolvable_fromhost")
++  $sender->[0] ne "<>" and $sender->[0] ne '$@[]'
++    and $sender->format ne "<>" and $sender->format ne '$@[]'
+     and !$self->check_dns($sender->host)
+     and return (DENYSOFT, 
+                 ($sender->host

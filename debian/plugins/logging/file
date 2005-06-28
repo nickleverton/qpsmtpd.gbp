@@ -1,0 +1,149 @@
+#!/usr/bin/perl
+# $Id: file 478 2005-07-19 07:40:16Z aqua $
+
+=head1 NAME
+
+file - Simple log-to-file logging for qpsmtpd
+
+=head1 DESCRIPTION
+
+The 'file' logging plugin for qpsmtpd records qpsmtpd log messages into a
+file (or a named pipe, if you prefer.)
+
+=head1 CONFIGURATION
+
+To enable the logging plugin, add a line of this form to the qpsmtpd plugins
+configuration file:
+
+=over
+
+logging/file [loglevel I<level>] I<path>
+
+For example:
+
+logging/file loglevel LOGINFO /var/log/qpsmtpd.log
+
+=back
+
+Multiple instances of the plugin can be configured by appending :I<N> for any
+integer(s) I<N>, to log to multiple files simultaneously, e.g. to log critical
+errors and normally verbose logs elsewhere.
+
+The following optional configuration setting can be supplied:
+
+=over
+
+=item loglevel I<loglevel>
+
+The internal log level below which messages will be logged.  The I<loglevel>
+given should be chosen from this list.  Priorities count downward (for example,
+if LOGWARN were selected, LOGERROR, LOGCRIT and LOGEMERG messages would be
+logged as well):
+
+=over
+
+=item B<LOGDEBUG>
+
+=item B<LOGINFO>
+
+=item B<LOGNOTICE>
+
+=item B<LOGWARN>
+
+=item B<LOGERROR>
+
+=item B<LOGCRIT>
+
+=item B<LOGALERT>
+
+=item B<LOGEMERG>
+
+=back
+
+=back
+
+
+The chosen I<path> should be writable by the user running qpsmtpd; it will be
+created it did not already exist, and appended to otherwise.
+
+=head1 AUTHOR
+
+Devin Carraway <qpsmtpd@devin.com>
+
+=head1 LICENSE
+
+Copyright (c) 2005, Devin Carraway.
+
+This plugin is licensed under the same terms as the qpsmtpd package itself.
+Please see the LICENSE file included with qpsmtpd for details.
+
+=cut
+
+use strict;
+use warnings;
+
+use IO::File;
+use Sys::Hostname;
+
+sub register {
+    my ($self, $qp, @args) = @_;
+    my %args;
+
+    $self->{_loglevel} = LOGWARN;
+
+    while (1) {
+    	last if !@args;
+    	if (lc $args[0] eq 'loglevel') {
+            shift @args;
+            my $ll = shift @args;
+            if (!defined $ll) {
+                warn "Malformed arguments to logging/file plugin";
+                return;
+            }
+            if ($ll =~ /^(\d+)$/) {
+                $self->{_loglevel} = $1;
+            }
+            elsif ($ll =~ /^(LOG\w+)$/) {
+                $self->{_loglevel} = log_level($1);
+                defined $self->{_loglevel} or $self->{_loglevel} = LOGWARN;
+            }
+        }
+        else { last }
+    }
+
+    unless (@args && $args[0]) {
+        warn "Malformed arguments to syslog plugin";
+        return;
+    }
+
+    my $output = join(' ', @args);
+
+    if ($output =~ /^\s*\|(.*)/) {
+        unless ($self->{_f} = new IO::File "|$1") {
+            warn "Error opening log output to command $1: $!";
+            return;
+        }
+    } elsif ($output =~ /^(.*)/) { # detaint
+        unless ($self->{_f} = new IO::File ">>$1") {
+            warn "Error opening log output to path $1: $!";
+            return;
+        }
+    }
+    $self->{_f}->autoflush(1);
+
+    $self->register_hook('logging', 'write_log');
+}
+
+sub write_log {
+    my ($self, $txn, $trace, $hook, $plugin, @log) = @_;
+
+    return DECLINED if $trace > $self->{_loglevel};
+    return DECLINED if defined $plugin and $plugin eq $self->plugin_name;
+
+    my $f = $self->{_f};
+    print $f scalar localtime, ' ', hostname(), '[', $$, ']: ', @log, "\n";
+    return DECLINED;
+}
+
+# vi: tabstop=4 shiftwidth=4 expandtab:
+

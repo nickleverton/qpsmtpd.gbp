@@ -1,0 +1,67 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.30rc2.detach/qpsmtpd-forkserver qpsmtpd-0.30rc2.pidfile/qpsmtpd-forkserver
+--- qpsmtpd-0.30rc2.detach/qpsmtpd-forkserver	2005-07-05 01:47:44.000000000 -0700
++++ qpsmtpd-0.30rc2.pidfile/qpsmtpd-forkserver	2005-07-10 04:31:16.000000000 -0700
+@@ -23,6 +23,7 @@
+ my $USER      = 'smtpd';		# user to suid to
+ my $MAXCONNIP = 5;              # max simultaneous connections from one IP
+ my $DETACH    = 0;              # detach from controlling terminal (daemonize)
++my $PIDFILE   = '';             # file to which server PID will be written
+ 
+ sub usage {
+         print <<"EOT";
+@@ -33,6 +34,7 @@
+  -u, --user U              : run as a particular user (default 'smtpd')
+  -m, --max-from-ip M       : limit connections from a single IP; default 5
+  --detach                  : detach from controlling terminal
++ --pid-file filename       : write server PID to specified file
+ EOT
+         exit 0;
+ }
+@@ -44,6 +46,7 @@
+            'p|port=i' => \$PORT,
+            'u|user=s' => \$USER,
+ 	   'detach' => \$DETACH,
++	   'pid-file=s' => \$PIDFILE,
+ 	   ) || &usage;
+ 
+ # detaint the commandline
+@@ -51,6 +54,7 @@
+ if ($LOCALADDR =~ /^([\d\w\-.]+)$/) { $LOCALADDR = $1 } else { &usage }
+ if ($USER =~ /^([\w\-]+)$/) { $USER = $1 } else { &usage }
+ if ($MAXCONN =~ /^(\d+)$/) { $MAXCONN = $1 } else { &usage }
++if ($PIDFILE =~ /^(.+|)$/) { $PIDFILE = $1 } else { &usage }
+ 
+ delete $ENV{ENV};
+ $ENV{PATH} = '/bin:/usr/bin:/var/qmail/bin';
+@@ -69,6 +73,9 @@
+ sub HUNTSMAN {
+   $SIG{CHLD} = 'DEFAULT';
+   kill 'INT' => keys %childstatus;
++  if ($PIDFILE && -e $PIDFILE) {
++    unlink $PIDFILE or ::log(LOGERROR, "unlink: $PIDFILE: $!");
++  }
+   exit(0);
+ }
+ 
+@@ -113,6 +120,13 @@
+ 	POSIX::setsid or die "setsid: $!";
+ }
+ 
++if ($PIDFILE) {
++        open PIDFILE, ">$PIDFILE" or die "$PIDFILE: $!";
++        print PIDFILE "$$\n";
++        close PIDFILE;
++}
++
++
+ while (1) {
+   my $running = scalar keys %childstatus;
+   while ($running >= $MAXCONN) { 

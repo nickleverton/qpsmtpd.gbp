@@ -1,0 +1,89 @@
+#!/bin/sh
+
+set -e
+
+RUNAS=qpsmtpd
+SPOOLDIR=/var/spool/qpsmtpd
+LOGDIR=/var/log/qpsmtpd
+PIDDIR=/var/run/qpsmtpd
+
+if [ -e /etc/qpsmtpd/debconf-settings ] ; then
+	. /etc/qpsmtpd/debconf-settings
+fi
+
+if [ -e /usr/share/debconf/confmodule ] ; then
+	. /usr/share/debconf/confmodule
+fi
+
+setup_user()
+{
+	if ( ! getent passwd "$RUNAS" > /dev/null ) ; then
+		adduser --quiet \
+			--system --home "$SPOOLDIR" \
+			--gecos "qpsmtpd daemon user" \
+			--group "$RUNAS"
+	fi
+	if [ "x$QUEUE_PLUGIN" = "xpostfix" ] ; then
+		if ( ! getent group "postdrop" | \
+		       tr ":" "\n" | \
+		       grep -q "^$RUNAS\$" ) ; then
+			adduser --quiet "$RUNAS" "postdrop"
+		fi
+	fi
+}
+
+setup_perms()
+{
+	if ( ! dpkg-statoverride --list "$SPOOLDIR" > /dev/null ) ; then
+		dpkg-statoverride --update --add "$RUNAS" "$RUNAS" 2700 "$SPOOLDIR"
+	fi
+	if ( ! dpkg-statoverride --list "$LOGDIR" > /dev/null ) ; then
+		dpkg-statoverride --update --add "$RUNAS" adm 2750 "$LOGDIR"
+	fi
+	if ( ! dpkg-statoverride --list "$PIDDIR" > /dev/null ) ; then
+		dpkg-statoverride --update --add "$RUNAS" adm 2755 "$PIDDIR"
+	fi
+}
+
+setup_maildir_spool()
+{
+	if [ "x$QUEUE_PLUGIN" = "xmaildir" -a \
+	     "x$QUEUE_MAILDIR_DESTINATION" != "x" ] ; then
+		if [ ! -d "$QUEUE_MAILDIR_DESTINATION" ] ; then
+			[ -d "`dirname "$QUEUE_MAILDIR_DESTINATION"`" ] || \
+				mkdir -m 0755 -p "`dirname "$QUEUE_MAILDIR_DESTINATION"`"
+			[ -d "$QUEUE_MAILDIR_DESTINATION" ] || \
+				mkdir -m 0700 -p "$QUEUE_MAILDIR_DESTINATION"
+			for d in "$QUEUE_MAILDIR_DESTINATION/new" \
+					 "$QUEUE_MAILDIR_DESTINATION/cur" \
+					 "$QUEUE_MAILDIR_DESTINATION/tmp" ; do
+				if [ ! -d "$d" ] ; then
+					mkdir -m 0700 "$d"
+				fi
+			done
+			chown -R $RUNAS "$QUEUE_MAILDIR_DESTINATION"
+		fi
+	fi
+}
+
+case "$1" in
+	configure)
+		setup_user
+		setup_perms
+		setup_maildir_spool
+		;;
+	abort-upgrade|abort-remove|abort-deconfigure)
+		# no-op
+		;;
+	*)
+		echo "Unrecognized postinst argument '$1'"
+		;;
+
+esac
+
+#DEBHELPER#
+
+db_stop
+
+exit 0
+

@@ -1,0 +1,6 @@
+qpsmtpd (0.30-1) unstable; urgency=low
+
+  * Initial Debianization (Closes: #263567)
+
+ -- Devin Carraway <devin@debian.org>  Tue, 28 Jun 2005 02:10:12 -0700
+

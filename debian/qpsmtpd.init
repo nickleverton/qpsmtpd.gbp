@@ -1,0 +1,71 @@
+#!/bin/sh
+
+set -e
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+[ -x "/usr/bin/qpsmtpd-forkserver" ] || exit 0
+
+PORT="25"
+RUNAS="qpsmtpd"
+NICE=""
+INTERFACES=""
+LISTEN=""
+ENABLED="false"
+
+[ -f "/etc/qpsmtpd/debconf-settings" ] && . "/etc/qpsmtpd/debconf-settings"
+
+[ "$ENABLED" = "true" -o "$ENABLED" = "1" ] || exit 0
+
+if [ "x$INTERFACES" != "x" ] ; then
+	LISTEN=`echo "$INTERFACES" | \
+		perl -pe 's/(\S+)/--listen-address $1/g'`
+fi
+
+qpsmtpd_start()
+{
+	export QPSMTPD_CONFIG="/etc/qpsmtpd"
+	start-stop-daemon --quiet --start \
+		--exec /usr/bin/qpsmtpd-forkserver -- \
+		--port $PORT --user $RUNAS \
+		--pid-file /var/run/qpsmtpd/qpsmtpd.pid \
+		$LISTEN --detach
+}
+
+qpsmtpd_stop()
+{
+	# qpsmtpd is a perl script, and s-s-d doesn't know to recognize the
+	# perl interpreter when checking an --exec.  So instead of saying
+	# --exec qpsmtpd-forkserver, we hedge by giving the perl exec and
+	# the run-as user (there shouldn't be any other perls running as
+	# the qpsmtpd user).
+	start-stop-daemon --quiet --stop \
+		--pidfile /var/run/qpsmtpd/qpsmtpd.pid \
+		--exec /usr/bin/perl \
+		--user "$RUNAS"
+}
+
+case "$1" in
+	start)
+		echo -n "Starting qpsmtpd: "
+		qpsmtpd_start
+		echo "qpsmtpd-forkserver."
+		;;
+	stop)
+		echo -n "Stopping qpsmtpd: "
+		qpsmtpd_stop
+		echo "qpsmtpd-forkserver."
+		;;
+	restart|reload|force-reload)
+		qpsmtpd_stop
+		qpsmtpd_start
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart|reload|force-reload}"
+		exit 1
+		;;
+esac
+
+exit 0
+
+

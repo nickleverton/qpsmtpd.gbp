@@ -1,0 +1,133 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.30rc2.pidfile/qpsmtpd-forkserver qpsmtpd-0.30rc2.multiinterface/qpsmtpd-forkserver
+--- qpsmtpd-0.30rc2.pidfile/qpsmtpd-forkserver	2005-07-10 04:31:16.000000000 -0700
++++ qpsmtpd-0.30rc2.multiinterface/qpsmtpd-forkserver	2005-07-10 04:31:42.000000000 -0700
+@@ -10,16 +10,17 @@
+ use Qpsmtpd::TcpServer;
+ use Qpsmtpd::Constants;
+ use IO::Socket;
++use IO::Select;
+ use Socket;
+ use Getopt::Long;
+-use POSIX qw(:sys_wait_h :errno_h :signal_h);
++use POSIX qw(:sys_wait_h :errno_h :signal_h setsid);
+ use strict;
+ $| = 1;
+ 
+ # Configuration
+ my $MAXCONN   = 15;				# max simultaneous connections
+ my $PORT      = 2525;				# port number
+-my $LOCALADDR = '0.0.0.0';		# ip address to bind to
++my @LOCALADDR;                                  # ip address(es) to bind to
+ my $USER      = 'smtpd';		# user to suid to
+ my $MAXCONNIP = 5;              # max simultaneous connections from one IP
+ my $DETACH    = 0;              # detach from controlling terminal (daemonize)
+@@ -28,7 +29,9 @@
+ sub usage {
+         print <<"EOT";
+ usage: qpsmtpd-forkserver [ options ]
+- -l, --listen-address addr : listen on a specific address; default 0.0.0.0
++ -l, --listen-address addr : listen on specific address(es); can be specified
++                             multiple times for multiple bindings.  Default is
++			     0.0.0.0 (all interfaces).
+  -p, --port P              : listen on a specific port; default 2525
+  -c, --limit-connections N : limit concurrent connections to N; default 15
+  -u, --user U              : run as a particular user (default 'smtpd')
+@@ -40,7 +43,7 @@
+ }
+ 
+ GetOptions('h|help' => \&usage,
+-           'l|listen-address=s' => \$LOCALADDR,
++           'l|listen-address=s' => \@LOCALADDR,
+            'c|limit-connections=i' => \$MAXCONN,
+            'm|max-from-ip=i' => \$MAXCONNIP,
+            'p|port=i' => \$PORT,
+@@ -51,7 +54,14 @@
+ 
+ # detaint the commandline
+ if ($PORT =~ /^(\d+)$/) { $PORT = $1 } else { &usage }
+-if ($LOCALADDR =~ /^([\d\w\-.]+)$/) { $LOCALADDR = $1 } else { &usage }
++@LOCALADDR = ( '0.0.0.0' ) if !@LOCALADDR;
++for (0..$#LOCALADDR) {
++  if ($LOCALADDR[$_] =~ /^([\d\w\-.]+)$/) {
++    $LOCALADDR[$_] = $1;
++  } else {
++    &usage;
++  }
++}
+ if ($USER =~ /^([\w\-]+)$/) { $USER = $1 } else { &usage }
+ if ($MAXCONN =~ /^(\d+)$/) { $MAXCONN = $1 } else { &usage }
+ if ($PIDFILE =~ /^(.+|)$/) { $PIDFILE = $1 } else { &usage }
+@@ -83,13 +93,18 @@
+ $SIG{INT} = \&HUNTSMAN;
+ $SIG{TERM} = \&HUNTSMAN;
+ 
+-# establish SERVER socket, bind and listen.
+-my $server = IO::Socket::INET->new(LocalPort => $PORT,
+-				   LocalAddr => $LOCALADDR,
+-                                   Proto     => 'tcp',
+-                                   Reuse     => 1,
+-                                   Listen    => SOMAXCONN )
+-  or die "Creating TCP socket $LOCALADDR:$PORT: $!\n";
++my $select = new IO::Select;
++
++# establish SERVER socket(s), bind and listen.
++for my $listen_addr (@LOCALADDR) {
++  my $server = IO::Socket::INET->new(LocalPort => $PORT,
++                                     LocalAddr => $listen_addr,
++                                     Proto     => 'tcp',
++                                     Reuse     => 1,
++                                     Listen    => SOMAXCONN )
++    or die "Creating TCP socket $listen_addr:$PORT: $!\n";
++  $select->add($server);
++}
+ 
+ # Drop priviledges
+ my (undef, undef, $quid, $qgid) = getpwnam $USER or
+@@ -116,8 +131,8 @@
+ 	open STDOUT, '>/dev/null' or die "/dev/null: $!";
+ 	open STDERR, '>&STDOUT' or die "open(stderr): $!";
+ 	defined (my $pid = fork) or die "fork: $!";
+-	exit 0 if $pid;
+-	POSIX::setsid or die "setsid: $!";
++	exit if $pid;
++	setsid or die "setsid: $!";
+ }
+ 
+ if ($PIDFILE) {
+@@ -134,9 +149,16 @@
+     sleep(1) ;
+     $running = scalar keys %childstatus;
+   }
+-    my $hisaddr = accept(my $client, $server);
+-    if (!$hisaddr) {
+-        # possible something condition...
++
++  my @ready = $select->can_read();
++  next if !@ready;
++  # accept one connection per loop
++  my $server = shift @ready;
++
++  my ($client, $hisaddr) = $server->accept;
++
++    if (!$client) {
++        ::log(LOGERROR,"Error accepting new connection: $!");
+         next;
+     }
+     my ($port, $iaddr) = sockaddr_in($hisaddr);
+@@ -176,7 +198,7 @@
+     # all children should have different seeds, to prevent conflicts
+     srand( time ^ ($$ + ($$ << 15)) );
+ 
+-    close($server);
++    $_->close for $select->handles;
+ 
+     $SIG{$_} = 'DEFAULT' for keys %SIG;
+     $SIG{ALRM} = sub { 

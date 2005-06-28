@@ -1,0 +1,8 @@
+forkserver-detach.patch
+forkserver-pidfile.patch
+forkserver-multiinterface.patch
+forkserver-aux-groups.patch
+config-plugindirs.patch
+configdir-env.patch
+config-includes.patch
+require_resolvable_fromhost-config.patch

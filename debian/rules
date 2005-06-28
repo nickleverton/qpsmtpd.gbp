@@ -1,0 +1,72 @@
+#!/usr/bin/make -f
+
+PERL=perl
+export DH_COMPAT=4
+
+include /usr/share/dpatch/dpatch.make
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	-$(MAKE) realclean
+	dh_clean
+
+configure: patch
+	dh_testdir
+	$(PERL) Makefile.PL INSTALLDIRS=vendor
+
+build: configure
+	dh_testdir
+	$(MAKE)
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	$(MAKE) install PREFIX=$(CURDIR)/debian/qpsmtpd/usr
+	# Comment out this line to omit the usual deletion of the qpsmtpd
+	# tcpserver-based toplevel script.  The standard install uses
+	# qpsmtpd-forkserver to avoid a non-free dependency on tcpserver.
+	rm -f $(CURDIR)/debian/qpsmtpd/usr/bin/qpsmtpd
+	# /var/spool/qpsmtpd will be chown'ed by postinst
+	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/spool/qpsmtpd
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/log/qpsmtpd
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/run/qpsmtpd
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/etc/qpsmtpd
+	# install the configuration
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/etc/qpsmtpd
+	cp -a $(CURDIR)/debian/etc/* $(CURDIR)/debian/qpsmtpd/etc/qpsmtpd/
+	# install the plugins
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins
+	cp -a $(CURDIR)/plugins/* $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins/
+	cp -a $(CURDIR)/debian/plugins/* $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins/
+	# install lintian overrides
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides
+	install -m 644 debian/qpsmtpd.lintian $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides/qpsmtpd
+
+binary-arch: build install
+# nothing arch-dependent
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_installman $(CURDIR)/debian/qpsmtpd-forkserver.8
+	dh_installdebconf
+	dh_installlogrotate
+	dh_installchangelogs Changes
+	dh_installinit
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_perl
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: clean build binary-indep binary-arch binary
+
