@@ -6,3 +6,4 @@ config-plugindirs.patch
 configdir-env.patch
 config-includes.patch
 require_resolvable_fromhost-config.patch
+smtp-loglevel.patch

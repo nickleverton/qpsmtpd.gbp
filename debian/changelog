@@ -1,3 +1,14 @@
+qpsmtpd (0.30-2) unstable; urgency=low
+
+  * Move autogeneration of config files to postinst, to avoid
+    preconfiguration problems installing under APT (Closes: #319724)
+  * Explicitly configure spool_dir
+  * Add watchfile
+  * add patch: smtp-loglevel: reduce loglevel of SMTP conversation from
+    LOGDEBUG to LOGINFO
+
+ -- Devin Carraway <devin@debian.org>  Mon, 25 Jul 2005 01:52:09 -0700
+
 qpsmtpd (0.30-1) unstable; urgency=low
 
   * Initial Debianization (Closes: #263567)
