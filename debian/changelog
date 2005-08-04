@@ -1,3 +1,9 @@
+qpsmtpd (0.30-3) unstable; urgency=low
+
+  * Accept debconf-2.0 as an alternative to debconf
+
+ -- Devin Carraway <devin@debian.org>  Thu,  4 Aug 2005 00:46:08 -0700
+
 qpsmtpd (0.30-2) unstable; urgency=low
 
   * Move autogeneration of config files to postinst, to avoid
