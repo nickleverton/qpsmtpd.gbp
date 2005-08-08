@@ -1,3 +1,10 @@
+qpsmtpd (0.30-4) unstable; urgency=low
+
+  * Add debconf template Czech translation; thanks to Miroslav Kure.
+    (Closes: #321767)
+
+ -- Devin Carraway <devin@debian.org>  Mon,  8 Aug 2005 02:34:57 -0700
+
 qpsmtpd (0.30-3) unstable; urgency=low
 
   * Accept debconf-2.0 as an alternative to debconf
