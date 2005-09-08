@@ -1,3 +1,10 @@
+qpsmtpd (0.30-5) unstable; urgency=low
+
+  * Add debconf template French translation; thanks to Steve Petruzzello
+    and the French l10n team.  (Closes: #326848)
+
+ -- Devin Carraway <devin@debian.org>  Thu,  8 Sep 2005 02:58:00 -0700
+
 qpsmtpd (0.30-4) unstable; urgency=low
 
   * Add debconf template Czech translation; thanks to Miroslav Kure.
