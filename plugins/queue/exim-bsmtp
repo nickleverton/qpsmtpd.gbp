@@ -2,7 +2,7 @@
 
 exim-bsmtp
 
-$Id: exim-bsmtp 315 2004-06-29 09:25:20Z aqua $
+$Id: /qpsmtpd/tags/0.31.1/plugins/queue/exim-bsmtp 6049 2005-11-16T15:31:23.581666Z ask  $
 
 =head1 DESCRIPTION
 
@@ -65,7 +65,6 @@ use File::Temp qw(tempfile);
 
 sub register {
     my ($self, $qp, %args) = @_;
-    $self->register_hook("queue", "queue_handler");
 
     $self->{_exim_path} = $args{exim_path} || '/usr/sbin/rsmtp';
     $self->{_exim_path} = $1 if $self->{_exim_path} =~ /(.*)/;
@@ -76,7 +75,7 @@ sub register {
     }
 }
 
-sub queue_handler {
+sub hook_queue {
     my ($self, $txn) = @_;
 
     my $tmp_dir = $self->qp->config('spool_dir') || '/tmp';
@@ -134,4 +133,6 @@ sub queue_handler {
 
 
 1;
+
+# vi: ts=4 sw=4 expandtab syn=perl
 

@@ -1,3 +1,10 @@
+qpsmtpd (0.31.1-1) unstable; urgency=low
+
+  * New upstream release, replacing incomplete upstream packaging
+    of 0.31 (Closes: #339779)
+
+ -- Devin Carraway <devin@debian.org>  Fri, 18 Nov 2005 02:27:11 -0800
+
 qpsmtpd (0.31-1) unstable; urgency=low
 
   * New upstream release
