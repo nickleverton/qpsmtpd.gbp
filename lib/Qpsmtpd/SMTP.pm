@@ -50,14 +50,14 @@ sub dispatch {
 
   $self->{_counter}++; 
 
-  #$self->respond(553, $state{dnsbl_blocked}), return 1
-  #  if $state{dnsbl_blocked} and ($cmd eq "rcpt");
-
   if ($cmd !~ /^(\w{1,12})$/ or !exists $self->{_commands}->{$1}) {
-    my ($rc, $msg) = $self->run_hooks("unrecognized_command", $cmd);
-    if ($rc == DENY) {
+    my ($rc, $msg) = $self->run_hooks("unrecognized_command", $cmd, @_);
+    if ($rc == DENY_DISCONNECT) {
       $self->respond(521, $msg);
       $self->disconnect;
+    }
+    elsif ($rc == DENY) {
+      $self->respond(500, $msg);
     }
     elsif ($rc == DONE) {
       1;
@@ -104,8 +104,18 @@ sub start_conversation {
       return $rc;
     }
     elsif ($rc != DONE) {
-      $self->respond(220, $self->config('me') ." ESMTP qpsmtpd "
-          . $self->version ." ready; send us your mail, but not your spam.");
+      my $greets = $self->config('smtpgreeting');
+      if ( $greets ) {
+	  $greets .= " ESMTP";
+      }
+      else {
+	  $greets = $self->config('me') 
+	    . " ESMTP qpsmtpd " 
+	    . $self->version 
+	    . " ready; send us your mail, but not your spam.";
+      }
+
+      $self->respond(220, $greets);
       return DONE;
     }
 }
@@ -124,6 +134,7 @@ sub reset_transaction {
 
 sub connection {
   my $self = shift;
+  @_ and $self->{_connection} = shift;
   return $self->{_connection} || ($self->{_connection} = Qpsmtpd::Connection->new());
 }
 
@@ -142,6 +153,12 @@ sub helo {
     $self->respond(550, $msg);
   } elsif ($rc == DENYSOFT) {
     $self->respond(450, $msg);
+  } elsif ($rc == DENY_DISCONNECT) {
+      $self->respond(550, $msg);
+      $self->disconnect;
+  } elsif ($rc == DENYSOFT_DISCONNECT) {
+      $self->respond(450, $msg);
+      $self->disconnect;
   } else {
     $conn->hello("helo");
     $conn->hello_host($hello_host);
@@ -164,6 +181,12 @@ sub ehlo {
     $self->respond(550, $msg);
   } elsif ($rc == DENYSOFT) {
     $self->respond(450, $msg);
+  } elsif ($rc == DENY_DISCONNECT) {
+      $self->respond(550, $msg);
+      $self->disconnect;
+  } elsif ($rc == DENYSOFT_DISCONNECT) {
+      $self->respond(450, $msg);
+      $self->disconnect;
   } else {
     $conn->hello("ehlo");
     $conn->hello_host($hello_host);
@@ -200,6 +223,19 @@ HOOK: foreach my $hook ( keys %{$self->{hooks}} ) {
                  @capabilities,  
                 );
   }
+}
+
+sub auth {
+    my ( $self, $arg, @stuff ) = @_;
+
+    #they AUTH'd once already
+    return $self->respond( 503, "but you already said AUTH ..." )
+      if ( defined $self->{_auth}
+        and $self->{_auth} == OK );
+    return $self->respond( 503, "AUTH not defined for HELO" )
+      if ( $self->connection->hello eq "helo" );
+
+    return $self->{_auth} = Qpsmtpd::Auth::SASL( $self, $arg, @stuff );
 }
 
 sub mail {
@@ -272,7 +308,7 @@ sub mail {
     elsif ($rc == DENYSOFT_DISCONNECT) {
       $msg ||= $from->format . ', temporarily denied';
       $self->log(LOGINFO, "denysoft mail from " . $from->format . " ($msg)");
-      $self->respond(450, $msg);
+      $self->respond(421, $msg);
       $self->disconnect;
     }
     else { # includes OK
@@ -316,7 +352,7 @@ sub rcpt {
   elsif ($rc == DENYSOFT_DISCONNECT) {
     $msg ||= 'relaying denied';
     $self->log(LOGINFO, "delivery denied ($msg)");
-    $self->respond(450, $msg);
+    $self->respond(421, $msg);
     $self->disconnect;
   }
   elsif ($rc == OK) {
@@ -334,7 +370,8 @@ sub rcpt {
 sub help {
   my $self = shift;
   $self->respond(214, 
-          "This is qpsmtpd " . $self->version,
+          "This is qpsmtpd " . 
+          $self->config('smtpgreeting') ? '' : $self->version,
           "See http://smtpd.develooper.com/",
           'To report bugs or send comments, mail to <ask@develooper.com>.');
 }
@@ -413,7 +450,7 @@ sub data {
     return 1;
   }
   elsif ($rc == DENYSOFT_DISCONNECT) {
-    $self->respond(451, $msg || "Message denied temporarily");
+    $self->respond(421, $msg || "Message denied temporarily");
     $self->disconnect;
     return 1;
   }

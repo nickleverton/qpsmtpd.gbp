@@ -1,3 +1,11 @@
+qpsmtpd (0.31-1) unstable; urgency=low
+
+  * New upstream release
+  * Don't use start-stop-daemon's --exec option when stopping
+    forkserver, since perl upgrades break it (c.f. #256790, #337942)
+
+ -- Devin Carraway <devin@debian.org>  Fri, 18 Nov 2005 00:11:52 -0800
+
 qpsmtpd (0.30-5) unstable; urgency=low
 
   * Add debconf template French translation; thanks to Steve Petruzzello
@@ -17,7 +25,6 @@ qpsmtpd (0.30-3) unstable; urgency=low
   * Accept debconf-2.0 as an alternative to debconf
 
  -- Devin Carraway <devin@debian.org>  Thu,  4 Aug 2005 00:46:08 -0700
-
 qpsmtpd (0.30-2) unstable; urgency=low
 
   * Move autogeneration of config files to postinst, to avoid

@@ -34,14 +34,13 @@ qpsmtpd_start()
 
 qpsmtpd_stop()
 {
-	# qpsmtpd is a perl script, and s-s-d doesn't know to recognize the
-	# perl interpreter when checking an --exec.  So instead of saying
-	# --exec qpsmtpd-forkserver, we hedge by giving the perl exec and
-	# the run-as user (there shouldn't be any other perls running as
-	# the qpsmtpd user).
+	# qpsmtpd-forkserver is a perl script, and s-s-d's --exec option
+	# would look at the interpreter path rather than the script.  More
+	# seriously, however, --exec compares devices/inodes rather than
+	# executable paths, so --exec will break every time the perl package
+	# is upgraded (see Debian Bug#337942).  So, --exec isn't used at all.
 	start-stop-daemon --quiet --stop \
 		--pidfile /var/run/qpsmtpd/qpsmtpd.pid \
-		--exec /usr/bin/perl \
 		--user "$RUNAS"
 }
 

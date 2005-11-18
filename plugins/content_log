@@ -1,17 +1,12 @@
 # -*- perl -*-
-# $Id: content_log 93 2002-11-01 02:08:38Z robert $
+# $Id: content_log 479 2005-07-07 04:17:39Z robert $
 #
 # A simple example of a plugin that logs all incoming mail to a file.
 # Useful for debugging other plugins or keeping an archive of things.
 
 use POSIX qw:strftime:;
 
-sub register {
-  my ($self, $qp) = @_;
-  $self->register_hook("data_post", "mail_handler");
-}
-
-sub mail_handler {
+sub hook_data_post {
   my ($self, $transaction) = @_;
 
   # as a decent default, log on a per-day-basis

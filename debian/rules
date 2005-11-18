@@ -5,13 +5,6 @@ export DH_COMPAT=4
 
 include /usr/share/dpatch/dpatch.make
 
-checkpo:
-	@for t in debian/po/*.po ; do \
-		echo -n "Checking $$t" ; \
-		msgmerge -U $$t debian/po/templates.pot ; \
-		msgfmt -o /dev/null -c --statistics $$t ; \
-	done
-
 clean: unpatch
 	dh_testdir
 	dh_testroot
