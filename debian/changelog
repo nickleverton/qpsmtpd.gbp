@@ -1,7 +1,15 @@
+qpsmtpd (0.31.1-2) unstable; urgency=low
+
+  * Add debconf template Swedish translation; thanks to Daniel Nylander.
+    (Closes: #339732)
+  * Restore Czech debconf translation, which was inadvertantly left out
+    of 0.31 uploads
+
+ -- Devin Carraway <devin@debian.org>  Sun, 20 Nov 2005 12:16:49 -0800
+
 qpsmtpd (0.31.1-1) unstable; urgency=low
 
-  * New upstream release, replacing incomplete upstream packaging
-    of 0.31 (Closes: #339779)
+  * New upstream release
 
  -- Devin Carraway <devin@debian.org>  Fri, 18 Nov 2005 02:27:11 -0800
 
