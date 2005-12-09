@@ -1,3 +1,13 @@
+qpsmtpd (0.31.1-3) unstable; urgency=low
+
+  * add patch: forkserver-early-privdrop: drop root privileges early, so
+    logs get created with correct ownership (Closes: #342336)
+  * Correct permissions bug on affected systems by chowning to run-as
+    user if logfile is owned by root at startup
+  * Run package config under /bin/bash for now, not /bin/sh
+
+ -- Devin Carraway <devin@debian.org>  Fri,  9 Dec 2005 00:00:12 -0800
+
 qpsmtpd (0.31.1-2) unstable; urgency=low
 
   * Add debconf template Swedish translation; thanks to Daniel Nylander.

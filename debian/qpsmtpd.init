@@ -24,6 +24,13 @@ fi
 
 qpsmtpd_start()
 {
+	# a bug in 0.31.1 caused logfiles to be created as root, rather
+	# than as the $RUNAS user
+	if [ "x$RUNAS" != "x" -a \
+             "`stat --format '%u' /var/log/qpsmtpd/qpsmtpd.log 2>/dev/null`" \
+	       = "0" ] ; then
+                chown "$RUNAS" /var/log/qpsmtpd/qpsmtpd.log
+        fi
 	export QPSMTPD_CONFIG="/etc/qpsmtpd"
 	start-stop-daemon --quiet --start \
 		--exec /usr/bin/qpsmtpd-forkserver -- \
