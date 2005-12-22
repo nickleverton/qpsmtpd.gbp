@@ -8,7 +8,7 @@ Standards-Version: 3.6.2
 Package: qpsmtpd
 Architecture: all
 Depends: ${perl:Depends}, debconf (>= 1.0.0), adduser (>= 3.0), libdigest-hmac-perl, libmail-spf-query-perl, libnet-dns-perl, libnet-perl, libmailtools-perl
-Suggests: spamassassin (>= 3.0.0), clamav-daemon, freecdb
+Suggests: spamassassin (>= 3.0.0), clamav-daemon, tinycdb
 Description: Flexible SMTP daemon for network-level spam detection
  This is a replacement SMTP damon which installs alongside a mail delivery
  and transport system such as Exim, Postfix or Qmail, or used as an SMTP
