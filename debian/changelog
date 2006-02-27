@@ -1,3 +1,11 @@
+qpsmtpd (0.32-1) unstable; urgency=low
+
+  * New upstream release
+    + Includes patch from Hanno Hecker <hah@uu-x.de>, applying maps in cleanup
+      in postfix queue plugin (Closes: #334271).
+
+ -- Devin Carraway <devin@debian.org>  Mon, 27 Feb 2006 01:38:07 -0800
+
 qpsmtpd (0.31.1-4) unstable; urgency=low
 
   * Suggest: tinycdb instead of freecdb, since freecdb's

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: syslog 470 2005-07-07 08:16:03Z aqua $
+# $Id$
 
 =head1 NAME
 
@@ -137,8 +137,6 @@ sub register {
         warn "Error opening syslog output";
         return;
     }
-
-    $self->register_hook('logging', 'write_log');
 }
 
 my %priorities_ = (
@@ -152,7 +150,7 @@ my %priorities_ = (
     7 => 'LOG_DEBUG',
 );
 
-sub write_log {
+sub hook_logging {
     my ($self, $txn, $trace, $hook, $plugin, @log) = @_;
 
     return DECLINED if $trace > $self->{_loglevel};
@@ -166,4 +164,3 @@ sub write_log {
 }
 
 # vi: tabstop=4 shiftwidth=4 expandtab
-

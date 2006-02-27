@@ -1,5 +1,5 @@
 # -*- perl -*-
-# $Id: /qpsmtpd/tags/0.31.1/plugins/content_log 6049 2005-11-16T15:31:23.581666Z ask  $
+# $Id: content_log 618 2006-02-26 12:22:16Z ask $
 #
 # A simple example of a plugin that logs all incoming mail to a file.
 # Useful for debugging other plugins or keeping an archive of things.

@@ -1,4 +1,3 @@
-forkserver-early-privdrop.dpatch
 config-plugindirs.patch
-require_resolvable_fromhost-config.patch
 smtp-loglevel.patch
+eximqueue-newline-fix.patch.dpatch
