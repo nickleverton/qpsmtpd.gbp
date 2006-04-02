@@ -1,3 +1,10 @@
+qpsmtpd (0.32-2) unstable; urgency=low
+
+  * Remove debian-supplied plugin installation; as of 0.32 there aren't
+    any to install (Closes: #358926)
+
+ -- Devin Carraway <devin@debian.org>  Sun,  2 Apr 2006 03:09:43 -0700
+
 qpsmtpd (0.32-1) unstable; urgency=low
 
   * New upstream release

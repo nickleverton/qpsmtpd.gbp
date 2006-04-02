@@ -40,7 +40,6 @@ install: build
 	# install the plugins
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins
 	cp -a $(CURDIR)/plugins/* $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins/
-	cp -a $(CURDIR)/debian/plugins/* $(CURDIR)/debian/qpsmtpd/usr/share/qpsmtpd/plugins/
 	# install lintian overrides
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides
 	install -m 644 debian/qpsmtpd.lintian $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides/qpsmtpd
