@@ -1,3 +1,6 @@
 config-plugindirs.patch
 smtp-loglevel.patch
 eximqueue-newline-fix.patch.dpatch
+greylist-distrodirs.patch.dpatch
+require_resolvable_fromhost-enable.patch.dpatch
+

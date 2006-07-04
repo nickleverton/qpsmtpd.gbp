@@ -1,3 +1,19 @@
+qpsmtpd (0.32-3) unstable; urgency=low
+
+  * Store greylisting db in /var/lib/qpsmtpd/greylisting unless configured
+    to do otherwise; adjust postinst/postrm to set permissions
+    (Closes: #375005)
+  * Fix debconf-generated qmail-queue path to match where qmail-source
+    actually puts it, in /usr/sbin (Closes: #376205)
+  * Tolerate failures to shut down if not running (Closes: #375550)
+  * Slightly adjust wording of debconf prompts to make lintian happy
+  * Patch require_resolvable_fromhost to be enabled when listed in
+    /etc/qpsmtpd/plugins, without requiring an extra enable setting (per
+    agreement with upstream).  (Closes: #358711)
+  * Standards-Version 3.7.2
+
+ -- Devin Carraway <devin@debian.org>  Tue,  4 Jul 2006 02:04:04 -0700
+
 qpsmtpd (0.32-2) unstable; urgency=low
 
   * Remove debian-supplied plugin installation; as of 0.32 there aren't

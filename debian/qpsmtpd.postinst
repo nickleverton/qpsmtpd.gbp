@@ -4,6 +4,7 @@ set -e
 
 RUNAS=qpsmtpd
 SPOOLDIR=/var/spool/qpsmtpd
+GREYLISTDIR=/var/lib/qpsmtpd/greylisting
 LOGDIR=/var/log/qpsmtpd
 PIDDIR=/var/run/qpsmtpd
 
@@ -74,7 +75,7 @@ EOT
 		echo -n "queue/smtp-forward "
 		echo "$QUEUE_PROXY_DESTINATION" | tr " " ":"
 	elif [ "$QUEUE_PLUGIN" = "qmail" ] ; then
-		echo "queue/qmail-queue /usr/bin/qmail-queue"
+		echo "queue/qmail-queue /usr/sbin/qmail-queue"
 	elif [ "$QUEUE_PLUGIN" = "maildir" ] ; then
 		echo "queue/maildir $QUEUE_MAILDIR_DESTINATION"
 	fi
@@ -121,6 +122,9 @@ setup_perms()
 {
 	if ( ! dpkg-statoverride --list "$SPOOLDIR" > /dev/null ) ; then
 		dpkg-statoverride --update --add "$RUNAS" "$RUNAS" 2700 "$SPOOLDIR"
+	fi
+	if ( ! dpkg-statoverride --list "$GREYLISTDIR" > /dev/null ) ; then
+		dpkg-statoverride --update --add "$RUNAS" "$RUNAS" 2700 "$GREYLISTDIR"
 	fi
 	if ( ! dpkg-statoverride --list "$LOGDIR" > /dev/null ) ; then
 		dpkg-statoverride --update --add "$RUNAS" adm 2750 "$LOGDIR"

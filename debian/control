@@ -1,9 +1,9 @@
 Source: qpsmtpd
 Section: mail
 Priority: extra
-Build-Depends-Indep: dpatch, debhelper (>> 4.1.16), perl
+Build-Depends: dpatch, debhelper (>> 4.1.16), perl
 Maintainer: Devin Carraway <devin@debian.org>
-Standards-Version: 3.6.2
+Standards-Version: 3.7.2
 
 Package: qpsmtpd
 Architecture: all

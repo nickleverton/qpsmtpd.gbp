@@ -1,0 +1,19 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.32.orig/plugins/require_resolvable_fromhost qpsmtpd-0.32/plugins/require_resolvable_fromhost
+--- qpsmtpd-0.32.orig/plugins/require_resolvable_fromhost	2006-02-26 04:22:16.000000000 -0800
++++ qpsmtpd-0.32/plugins/require_resolvable_fromhost	2006-07-04 03:04:21.000000000 -0700
+@@ -19,7 +19,6 @@
+   }
+ 
+   if ($sender ne "<>" 
+-      and $self->qp->config("require_resolvable_fromhost")
+       and !$self->check_dns($sender->host)) {
+     if ($sender->host) {
+       # default of temp_resolver_failed is DENYSOFT

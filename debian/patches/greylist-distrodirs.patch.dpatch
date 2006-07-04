@@ -1,0 +1,56 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 99-unnamed.dpatch by  <devin@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+
+diff -aruN qpsmtpd-0.32.orig/plugins/greylisting qpsmtpd-0.32/plugins/greylisting
+--- qpsmtpd-0.32.orig/plugins/greylisting	2006-02-26 04:22:16.000000000 -0800
++++ qpsmtpd-0.32/plugins/greylisting	2006-07-04 01:55:04.000000000 -0700
+@@ -78,6 +78,22 @@
+ greylisting off globally if using per_recipient configs). 
+ Default: denysoft.
+ 
++=item db_dir <path>
++
++Path to a directory in which the greylisting DB will be stored.  This
++directory must be writable by the qpsmtpd user.  By default, the first
++usable directory from the following list will be used:
++
++=over 4
++
++=item /var/lib/qpsmtpd/greylisting
++
++=item I<BINDIR>/var/db (where BINDIR is the location of the qpsmtpd binary)
++
++=item I<BINDIR>/config
++
++=back
++
+ =item per_recipient <bool>
+ 
+ Flag to indicate whether to use per-recipient configs. 
+@@ -85,7 +101,8 @@
+ =item per_recipient_db <bool>
+ 
+ Flag to indicate whether to use per-recipient greylisting 
+-databases (default is to use a shared database).
++databases (default is to use a shared database).  Per-recipient configuration
++directories, if determined, supercede I<db_dir>.
+ 
+ =back
+ 
+@@ -191,7 +208,10 @@
+   # Setup database location
+   my $dbdir = $transaction->notes('per_rcpt_configdir') 
+     if $config->{per_recipient_db};
+-  $dbdir ||= -d "$QPHOME/var/db" ? "$QPHOME/var/db" : "$QPHOME/config";
++  for my $d ($dbdir, $config->{db_dir}, "/var/lib/qpsmtpd/greylisting",
++             "$QPHOME/var/db", "$QPHOME/config") {
++    last if $dbdir ||= $d && -d $d && $d;
++  }
+   my $db = "$dbdir/$DB";
+   $self->log(LOGINFO,"using $db as greylisting database");
+ 

@@ -33,6 +33,9 @@ install: build
 	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/spool/qpsmtpd
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/log/qpsmtpd
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/run/qpsmtpd
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/lib/qpsmtpd
+	# greylist db dir will be chown'ed by postinst
+	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/lib/qpsmtpd/greylisting
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/etc/qpsmtpd
 	# install the configuration
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/etc/qpsmtpd

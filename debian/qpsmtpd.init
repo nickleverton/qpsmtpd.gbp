@@ -46,7 +46,7 @@ qpsmtpd_stop()
 	# seriously, however, --exec compares devices/inodes rather than
 	# executable paths, so --exec will break every time the perl package
 	# is upgraded (see Debian Bug#337942).  So, --exec isn't used at all.
-	start-stop-daemon --quiet --stop \
+	start-stop-daemon --quiet --stop --oknodo \
 		--pidfile /var/run/qpsmtpd/qpsmtpd.pid \
 		--user "$RUNAS"
 }

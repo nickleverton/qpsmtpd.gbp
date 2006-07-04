@@ -31,7 +31,7 @@ _Description: Addresses on which to listen for incoming SMTP connections:
 Template: qpsmtpd/queue_plugin
 Type: select
 Choices: exim, postfix, qmail, proxy, maildir, none
-_Description: Select a queueing method for accepted mail:
+_Description: Queueing method for accepted mail:
  Select the method for queueing mail once it's been delivered via SMTP.  If
  you deliver your mail locally, choose the method corresponding to the
  installed MTA (the installer will try to pick the correct default.)
@@ -50,7 +50,7 @@ _Description: Select a queueing method for accepted mail:
 Template: qpsmtpd/queue_smtp_proxy_destination
 Type: string
 Default: localhost
-_Description: Select a destination host/port for SMTP proxy delivery
+_Description: Destination host/port for SMTP proxy delivery:
  To have qpsmtpd act as an SMTP proxy for another host, supply the hostname
  or IP address of that host here.  You can optionally add a port number
  after a colon, such as "localhost:25".
@@ -58,7 +58,7 @@ _Description: Select a destination host/port for SMTP proxy delivery
 Template: qpsmtpd/queue_maildir_destination
 Type: string
 Default: /var/spool/qpsmtpd/Maildir
-_Description: Select destination Maildir for maildir-type delivery
+_Description: Destination Maildir for maildir-type delivery:
  To have qpsmtpd deliver received mail into a local maildir-format spool,
  pick a location for that maildir.  A maildir will be created in that
  location if it does not exist already.
@@ -82,7 +82,7 @@ _Description: Proceed without a queueing plugin selected?
 Template: qpsmtpd/rcpthosts
 Type: string
 Default: unset
-_Description: Destination domain(s) to accept mail for? (blank for none)
+_Description: Destination domain(s) to accept mail for (blank for none):
  Enter a list of domain name(s) for which qpsmtpd should accept mail,
  separated by spaces.  This list should include any hostname or domain name
  for which you intend to accept delivery locally, as well as any recipient
