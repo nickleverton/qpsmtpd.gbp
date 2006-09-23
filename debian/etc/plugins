@@ -122,20 +122,6 @@ check_loop
 #
 # milter
 
-# spamassassin -- checks inbound mail with a spamassassin daemon, marking or
-# rejecting the mail based on spamd's response.  Requires that you have spamd
-# running either via TCP or a UNIX domain socket.  This plugin should
-# generally be configured near the end of the content checks plugin list, as
-# spamassassin is computationally quite expensive relative to many other sorts
-# of tests.
-#
-# usage:
-# spamassassin [reject_threshold <points>] [munge_subject_threshold <points>]
-#              [spamd_socket /path/to/spamd.socket]
-#              [leave_old_headers <drop|rename|keep>]
-#
-# spamassassin munge_subject_threshold 8 reject_threshold 10
-
 # virus/clamav -- checks inbound mail with the ClamAV virus scanner.  This
 # version of the plugin uses clamscan, which executes the scan locally, at the
 # cost of some startup time not affecting clamdscan.
@@ -156,6 +142,20 @@ check_loop
 #                 [deny_viruses <yes|no>]
 #
 # virus/clamdscan
+
+# spamassassin -- checks inbound mail with a spamassassin daemon, marking or
+# rejecting the mail based on spamd's response.  Requires that you have spamd
+# running either via TCP or a UNIX domain socket.  This plugin should
+# generally be configured near the end of the content checks plugin list, as
+# spamassassin is computationally quite expensive relative to many other sorts
+# of tests.
+#
+# usage:
+# spamassassin [reject_threshold <points>] [munge_subject_threshold <points>]
+#              [spamd_socket /path/to/spamd.socket]
+#              [leave_old_headers <drop|rename|keep>]
+#
+# spamassassin munge_subject_threshold 8 reject_threshold 10
 
 ## (for a list of further virus scanner plugins, see the directory
 ## /usr/share/qpsmtpd/plugins/virus)

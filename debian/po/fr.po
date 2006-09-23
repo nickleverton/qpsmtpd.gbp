@@ -13,10 +13,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: qpsmtpd_0.30-4\n"
+"Project-Id-Version: qpsmtpd_0.32-3\n"
 "Report-Msgid-Bugs-To: devin@debian.org\n"
 "POT-Creation-Date: 2006-07-04 02:54-0700\n"
-"PO-Revision-Date: 2005-08-24 10:55+0100\n"
+"PO-Revision-Date: 2006-07-19 12:33+0100\n"
 "Last-Translator: Steve Petruzzello <dlist@bluewin.ch>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgid ""
 "default, when first installed qpsmtpd cannot normally be started."
 msgstr ""
 "La plupart des agents de transport de courrier (MTA) de Debian écoutent une "
-"ou toutes les interfaces réseaux par défaut. En conséquence, qpsmtpd ne peut "
+"ou toutes les interfaces réseau par défaut. En conséquence, qpsmtpd ne peut "
 "être démarré normalement lors de l'installation initiale."
 
 #. Type: boolean
@@ -55,11 +55,11 @@ msgid ""
 msgstr ""
 "Avant d'activer qpsmtpd, vous devez d'abord configurer votre agent de "
 "transport local afin qu'il ne se lie pas au port TCP de SMTP sur au moins "
-"une interface. L'approche la plus habituelle est de le laisser à l'écoute "
-"sur l'interface de bouclage (127.0.0.1), avec qpsmtpd à l'écoute sur "
-"l'interface externe. Des instructions sur la manière de configurer les "
-"agents de transport courants en parallèle avec qpsmtpd peuvent être "
-"trouvées, après l'installation, dans /usr/share/doc/qpsmtpd/README.Debian."
+"une interface. La démarche la plus courante est de le laisser à l'écoute sur "
+"l'interface de bouclage (127.0.0.1), avec qpsmtpd à l'écoute sur l'interface "
+"externe. Des instructions sur la manière de configurer les agents de "
+"transport courants en parallèle avec qpsmtpd peuvent être trouvées, après "
+"l'installation, dans /usr/share/doc/qpsmtpd/README.Debian."
 
 #. Type: boolean
 #. Description
@@ -68,9 +68,9 @@ msgid ""
 "Once you have adjusted your MTA configuration, you can enable qpsmtpd by "
 "restarting this configuration, by running 'dpkg-reconfigure qpsmtpd'."
 msgstr ""
-"Une fois ajustée la configuration de votre agent de transport de courrier, "
-"vous pouvez activer qpsmtpd en relançant cette configuration avec la "
-"commande 'dpkg-reconfigure qpsmtpd'."
+"Une fois la configuration de votre agent de transport de courrier mise au "
+"point, vous pouvez activer qpsmtpd en relançant cette configuration avec la "
+"commande « dpkg-reconfigure qpsmtpd »."
 
 #. Type: string
 #. Description
@@ -89,7 +89,7 @@ msgid ""
 msgstr ""
 "Veuillez entrer une ou plusieurs adresses IP locales, séparées par des "
 "espaces, pour lesquelles qpsmtpd sera à l'écoute pour les connexions SMTP "
-"entrantes. Si vous laissez vide cette option, qpsmtpd écoutera toutes les "
+"entrantes. Si vous laissez cette option vide, qpsmtpd écoutera toutes les "
 "interfaces disponibles lors du démarrage."
 
 #. Type: string
@@ -102,15 +102,14 @@ msgid ""
 msgstr ""
 "Si vous souhaitez utiliser qpsmtpd pour mettre en attente la distribution "
 "pour des hôtes distants dans votre agent de transport local, vous devriez "
-"laisser qpsmtpd écouter toutes les interfaces externes et laisser votre MTA "
-"local écouter l'interface de bouclage (127.0.0.1)."
+"laisser qpsmtpd écouter toutes les interfaces externes et laisser votre "
+"agent de transport local écouter l'interface de bouclage (127.0.0.1)."
 
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:3001
-#, fuzzy
 msgid "Queueing method for accepted mail:"
-msgstr "Méthode de mise en attente pour le courier accepté :"
+msgstr "Méthode de mise en attente pour le courrier accepté :"
 
 #. Type: select
 #. Description
@@ -160,7 +159,6 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:4001
-#, fuzzy
 msgid "Destination host/port for SMTP proxy delivery:"
 msgstr "Hôte/port de destination pour la distribution du proxy SMTP :"
 
@@ -179,7 +177,6 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:5001
-#, fuzzy
 msgid "Destination Maildir for maildir-type delivery:"
 msgstr "Répertoire Maildir pour une distribution de type maildir :"
 
@@ -217,8 +214,8 @@ msgstr ""
 "courrier d'être mis en attente par qpsmtpd jusqu'à ce que vous configuriez "
 "vous-même une méthode de mise en attente. Tout hôte qui tentera de vous "
 "distribuer du courrier recevra un message d'erreur 4xx tant que ce ne sera "
-"pas fait, ce qui gaspille de la bande passante et risque des courriers "
-"légitimes."
+"pas fait, ce qui gaspille de la bande passante et risque un rejet des "
+"courriers légitimes."
 
 #. Type: boolean
 #. Description
@@ -240,7 +237,6 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:7001
-#, fuzzy
 msgid "Destination domain(s) to accept mail for (blank for none):"
 msgstr ""
 "Veuillez choisir un ou plusieurs domaines de destination qui acceptant le "
@@ -275,5 +271,5 @@ msgid ""
 "If you prefer to manage this list manually, leave the entry blank and edit "
 "the file /etc/qpsmtpd/rcpthosts."
 msgstr ""
-"Si vous préférez gérer cette liste vous-même, laissez-la vide et modifierz "
-"le fichier /etc/qpsmtpd/rcpthosts."
+"Si vous préférez gérer cette liste vous-même, laissez-la vide et modifiez le "
+"fichier /etc/qpsmtpd/rcpthosts."

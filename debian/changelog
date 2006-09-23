@@ -1,3 +1,18 @@
+qpsmtpd (0.32-4) unstable; urgency=low
+
+  * Fix a backwards translation in formatting host:port for smtp-forward
+    (Closes: #386664)
+  * Update fr debconf translation; thanks to Steve Petruzzelo
+    <dlist@bluewin.ch> (Closes: #381298)
+  * Move suggested spamassassin plugin placement after clamav in
+    /etc/qpsmtpd/plugins (Closes: #384319)
+  * Apply change#642 from upstream, fixing response to HELP in SMTP
+    conversation (Closes: #381322)
+  * Update init.d script for LSB 3.1.0 by adding init-info section and
+    status command
+
+ -- Devin Carraway <devin@debian.org>  Sat, 23 Sep 2006 00:58:47 -0700
+
 qpsmtpd (0.32-3) unstable; urgency=low
 
   * Store greylisting db in /var/lib/qpsmtpd/greylisting unless configured

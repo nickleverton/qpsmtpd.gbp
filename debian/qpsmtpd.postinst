@@ -73,7 +73,7 @@ EOT
 		echo "queue/postfix-queue"
 	elif [ "$QUEUE_PLUGIN" = "proxy" ] ; then
 		echo -n "queue/smtp-forward "
-		echo "$QUEUE_PROXY_DESTINATION" | tr " " ":"
+		echo "$QUEUE_PROXY_DESTINATION" | tr ":" " "
 	elif [ "$QUEUE_PLUGIN" = "qmail" ] ; then
 		echo "queue/qmail-queue /usr/sbin/qmail-queue"
 	elif [ "$QUEUE_PLUGIN" = "maildir" ] ; then
