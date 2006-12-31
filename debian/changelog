@@ -1,3 +1,10 @@
+qpsmtpd (0.32-5) unstable; urgency=high
+
+  * Apply patch to fix support for multiple plugin directories (Closes:
+    #389025)
+
+ -- Devin Carraway <devin@debian.org>  Sun, 31 Dec 2006 10:31:42 -0800
+
 qpsmtpd (0.32-4) unstable; urgency=low
 
   * Fix a backwards translation in formatting host:port for smtp-forward
