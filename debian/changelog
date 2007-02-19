@@ -1,3 +1,9 @@
+qpsmtpd (0.32-6) unstable; urgency=low
+
+  * Update Czech translation; thanks to Miroslav Kure (Closes: #408657)
+
+ -- Devin Carraway <devin@debian.org>  Mon, 19 Feb 2007 01:37:10 -0800
+
 qpsmtpd (0.32-5) unstable; urgency=high
 
   * Apply patch to fix support for multiple plugin directories (Closes:
