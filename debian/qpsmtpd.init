@@ -44,6 +44,11 @@ qpsmtpd_start()
                 chown "$RUNAS" /var/log/qpsmtpd/qpsmtpd.log
         fi
 	export QPSMTPD_CONFIG="/etc/qpsmtpd"
+	if [ ! -d "/var/run/qpsmtpd" ] ; then
+		mkdir -p /var/run/qpsmtpd
+		chown $RUNAS:adm /var/run/qpsmtpd
+		chmod 2755 /var/run/qpsmtpd
+	fi
 	start-stop-daemon --quiet --start \
 		--exec /usr/bin/qpsmtpd-forkserver -- \
 		--port $PORT --user $RUNAS \

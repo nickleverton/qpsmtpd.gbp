@@ -1,3 +1,12 @@
+qpsmtpd (0.40-1) unstable; urgency=low
+
+  * New upstream release (Closes: #431933)
+    + Obsoletes smtp-loglevel.patch, greylist-distrodirs.patch
+  * Add German translation; thanks to Helge Kreutzmann (Closes: #431878)
+  * Fix word choice and typos in debconf templates (Closes: #431882)
+
+ -- Devin Carraway <devin@debian.org>  Thu, 14 Jun 2007 00:37:10 -0700
+
 qpsmtpd (0.32-6) unstable; urgency=low
 
   * Update Czech translation; thanks to Miroslav Kure (Closes: #408657)

@@ -1,5 +1,16 @@
 #!perl -w
 
+=head1 NAME
+
+dnsbl - handle DNS BlackList lookups
+
+=head1 DESCRIPTION
+
+Plugin that checks the IP address of the incoming connection against
+a configurable set of RBL services.
+
+=cut
+
 sub register {
   my ($self, $qp, $denial ) = @_;
   if ( defined $denial and $denial =~ /^disconnect$/i ) {
@@ -46,8 +57,10 @@ sub hook_connect {
 
   my $sel = IO::Select->new();
 
+  my $dom;
   for my $dnsbl (keys %dnsbl_zones) {
     # fix to find A records, if the dnsbl_zones line has a second field 20/1/04 ++msp
+    $dom->{"$reversed_ip.$dnsbl"} = 1;
     if (defined($dnsbl_zones{$dnsbl})) {
       $self->log(LOGDEBUG, "Checking $reversed_ip.$dnsbl for A record in the background");
       $sel->add($res->bgsend("$reversed_ip.$dnsbl"));
@@ -58,6 +71,7 @@ sub hook_connect {
   }
 
   $self->qp->connection->notes('dnsbl_sockets', $sel);
+  $self->qp->connection->notes('dnsbl_domains', $dom);
 
   return DECLINED;
 }
@@ -77,6 +91,7 @@ sub process_sockets {
   $res->udp_timeout(30);
 
   my $sel = $conn->notes('dnsbl_sockets') or return "";
+  my $dom = $conn->notes('dnsbl_domains');
   my $remote_ip = $self->qp->connection->remote_ip;
 
   my $result; 
@@ -99,11 +114,13 @@ sub process_sockets {
     if ($query) {
       my $a_record = 0;
       foreach my $rr ($query->answer) {
-	$a_record = 1 if $rr->type eq "A";
 	my $name = $rr->name;
+	$self->log(LOGDEBUG, "name $name");
+	next unless $dom->{$name};
+	$self->log(LOGDEBUG, "name $name was queried");
+	$a_record = 1 if $rr->type eq "A";
 	($dnsbl) = ($name =~ m/(?:\d+\.){4}(.*)/) unless $dnsbl;
 	$dnsbl = $name unless $dnsbl;
-	$self->log(LOGDEBUG, "name ", $rr->name);
 	next unless $rr->type eq "TXT";
 	$self->log(LOGDEBUG, "got txt record");
 	$result = $rr->txtdata and last;
@@ -149,7 +166,7 @@ sub process_sockets {
 }
 
 sub hook_rcpt {
-  my ($self, $transaction, $rcpt) = @_;
+  my ($self, $transaction, $rcpt, %param) = @_;
   my $connection = $self->qp->connection;
 
   # RBLSMTPD being non-empty means it contains the failure message to return
@@ -190,15 +207,6 @@ sub hook_disconnect {
 }
 
 1;
-
-=head1 NAME
-
-dnsbl - handle DNS BlackList lookups
-
-=head1 DESCRIPTION
-
-Plugin that checks the IP address of the incoming connection against
-a configurable set of RBL services.
 
 =head1 Usage
 

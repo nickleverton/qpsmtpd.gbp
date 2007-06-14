@@ -2,11 +2,14 @@ package Qpsmtpd::Plugin;
 use Qpsmtpd::Constants;
 use strict;
 
+# more or less in the order they will fire
 our @hooks = qw(
-    logging config  queue  data  data_post  quit  rcpt  mail  ehlo  helo
-    auth auth-plain auth-login auth-cram-md5
-    connect  reset_transaction  unrecognized_command  disconnect
-    deny ok pre-connection post-connection
+    logging config pre-connection connect ehlo_parse ehlo
+    helo_parse helo auth_parse auth auth-plain auth-login auth-cram-md5
+    rcpt_parse rcpt_pre rcpt mail_parse mail mail_pre 
+    data data_post queue_pre queue queue_post
+    quit reset_transaction disconnect post-connection
+    unrecognized_command deny ok received_line
 );
 our %hooks = map { $_ => 1 } @hooks;
 
@@ -14,6 +17,10 @@ sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   bless ({}, $class);
+}
+
+sub hook_name { 
+  return shift->{_hook};
 }
 
 sub register_hook {
@@ -26,11 +33,16 @@ sub register_hook {
 
   # I can't quite decide if it's better to parse this code ref or if
   # we should pass the plugin object and method name ... hmn.
-  $plugin->qp->_register_hook($hook, { code => sub { local $plugin->{_qp} = shift; local $plugin->{_hook} = $hook; $plugin->$method(@_) },
-				       name => $plugin->plugin_name,
-				     },
-				     $unshift,
-			     );
+  $plugin->qp->_register_hook
+    ($hook,
+     { code => sub { local $plugin->{_qp} = shift;
+                     local $plugin->{_hook} = $hook;
+                     $plugin->$method(@_)
+                   },
+       name => $plugin->plugin_name,
+     },
+     $unshift,
+    );
 }
 
 sub _register {
@@ -115,7 +127,7 @@ sub isa_plugin {
 
 # why isn't compile private?  it's only called from Plugin and Qpsmtpd.
 sub compile {
-    my ($class, $plugin, $package, $file, $test_mode) = @_;
+    my ($class, $plugin, $package, $file, $test_mode, $orig_name) = @_;
     
     my $sub;
     open F, $file or die "could not open $file: $!";
@@ -128,9 +140,9 @@ sub compile {
     my $line = "\n#line 0 $file\n";
 
     if ($test_mode) {
-        if (open(F, "t/plugin_tests/$plugin")) {
+        if (open(F, "t/plugin_tests/$orig_name")) {
             local $/ = undef;
-            $sub .= "#line 1 t/plugin_tests/$plugin\n";
+            $sub .= "#line 1 t/plugin_tests/$orig_name\n";
             $sub .= <F>;
             close F;
         }
@@ -146,7 +158,6 @@ sub compile {
 		    '@ISA = qw(Qpsmtpd::Plugin);',
 		    ($test_mode ? 'use Test::More;' : ''),
 		    "sub plugin_name { qq[$plugin] }",
-		    "sub hook_name { return shift->{_hook}; }",
 		    $line,
 		    $sub,
 		    "\n", # last line comment without newline?

@@ -14,8 +14,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: qpsmtpd\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-13 20:09+0100\n"
+"Report-Msgid-Bugs-To: devin@debian.org\n"
+"POT-Creation-Date: 2007-07-22 23:41-0700\n"
 "PO-Revision-Date: 2007-01-27 16:28+0100\n"
 "Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
 "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
@@ -120,9 +120,15 @@ msgstr ""
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:3001
+#, fuzzy
+#| msgid ""
+#| "Select \"proxy\" if you'd like qpsmtpd to act as an SMTP proxy for "
+#| "another MTA (local or remote).  You will then be prompted to pick a "
+#| "destination host."
 msgid ""
 "Select \"proxy\" if you'd like qpsmtpd to act as an SMTP proxy for another "
-"MTA (local or remote).  You will then be prompted to pick a destination host."
+"MTA (local or remote).  You will then be prompted to enter a destination "
+"host."
 msgstr ""
 "Pokud se má qpsmtpd chovat jako SMTP proxy pro jiné poštovní servery (místní "
 "nebo vzdálené), vyberte \"proxy\". Následně budete dotázáni na výběr "
@@ -176,9 +182,14 @@ msgstr "Cílový Maildir adresář pro doručení do lokální schránky:"
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:5001
+#, fuzzy
+#| msgid ""
+#| "To have qpsmtpd deliver received mail into a local maildir-format spool, "
+#| "pick a location for that maildir.  A maildir will be created in that "
+#| "location if it does not exist already."
 msgid ""
 "To have qpsmtpd deliver received mail into a local maildir-format spool, "
-"pick a location for that maildir.  A maildir will be created in that "
+"enter a location for that maildir.  A maildir will be created in that "
 "location if it does not exist already."
 msgstr ""
 "Aby qpsmtpd doručoval přijatou poštu do lokální schránky typu maildir, "
@@ -194,12 +205,20 @@ msgstr "Pokračovat bez modulu pro řazení do front?"
 #. Type: boolean
 #. Description
 #: ../qpsmtpd.templates:6001
+#, fuzzy
+#| msgid ""
+#| "By selecting \"none\" as a queueing plugin, you have disabled local "
+#| "queueing of inbound mail.  This will prevent any mail being spooled by "
+#| "qpsmtpd until you manually configure a queueing method.  Any hosts "
+#| "attempting to deliver mail to you will receive 4xx soft-failure messages "
+#| "until then, at the potentiial cost of wasted bandwidth and eventual "
+#| "bouncing of possibly legitimate mail."
 msgid ""
 "By selecting \"none\" as a queueing plugin, you have disabled local queueing "
 "of inbound mail.  This will prevent any mail being spooled by qpsmtpd until "
 "you manually configure a queueing method.  Any hosts attempting to deliver "
 "mail to you will receive 4xx soft-failure messages until then, at the "
-"potentiial cost of wasted bandwidth and eventual bouncing of possibly "
+"potential cost of wasted bandwidth and eventual bouncing of possibly "
 "legitimate mail."
 msgstr ""
 "Výběrem \"none\" jste zakázali řazení příchozí pošty do front, což efektivně "
@@ -211,10 +230,17 @@ msgstr ""
 #. Type: boolean
 #. Description
 #: ../qpsmtpd.templates:6001
+#, fuzzy
+#| msgid ""
+#| "To configure queueing manually, edit /etc/qpsmtpd/plugins and select one "
+#| "of the queueing methods listed there.  If you didn't see your installed "
+#| "MTA in the list of and aren't sure what to do, pick \"Cancel\" here and "
+#| "select the SMTP proxy method instead, configuring it to proxy into your "
+#| "MTA on a suitable local address/port."
 msgid ""
 "To configure queueing manually, edit /etc/qpsmtpd/plugins and select one of "
 "the queueing methods listed there.  If you didn't see your installed MTA in "
-"the list of and aren't sure what to do, pick \"Cancel\" here and select the "
+"the list and aren't sure what to do, pick \"Cancel\" here and select the "
 "SMTP proxy method instead, configuring it to proxy into your MTA on a "
 "suitable local address/port."
 msgstr ""

@@ -1,14 +1,14 @@
 #!/usr/bin/make -f
+# $Id$
 
 PERL=perl
-export DH_COMPAT=4
 
 include /usr/share/dpatch/dpatch.make
 
 clean: unpatch
 	dh_testdir
 	dh_testroot
-	-$(MAKE) realclean
+	[ ! -f "Makefile" ] || $(MAKE) realclean
 	dh_clean
 
 configure: patch
@@ -46,6 +46,8 @@ install: build
 	# install lintian overrides
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides
 	install -m 644 debian/qpsmtpd.lintian $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides/qpsmtpd
+	# remove pf2qp.pl, used to generate Constants.pm in upstream SVN
+	rm -f $(CURDIR)/debian/qpsmtpd/usr/share/perl5/Qpsmtpd/Postfix/pf2qp.pl
 
 binary-arch: build install
 # nothing arch-dependent

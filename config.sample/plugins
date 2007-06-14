@@ -12,6 +12,13 @@
 # from one IP!
 hosts_allow
 
+# enable to accept MAIL FROM:/RCPT TO: addresses without surrounding <>
+dont_require_anglebrackets
+
+# enable to reject MAIL FROM:/RCPT TO: parameters if client helo was HELO
+# (strict RFC 821)... this is not used in EHLO ...
+# parse_addr_withhelo
+
 quit_fortune
 
 check_earlytalker
@@ -27,6 +34,10 @@ check_badrcptto
 check_spamhelo
 
 # sender_permitted_from
+
+auth/auth_flat_file
+auth/authnull
+auth/authdeny
 
 # this plugin needs to run after all other "rcpt" plugins
 rcpt_ok
