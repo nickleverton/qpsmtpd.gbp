@@ -1,3 +1,11 @@
+qpsmtpd (0.40-2) unstable; urgency=low
+
+  * Add Portuguese debconf translation; thanks to Miguel Figueiredo
+  * Update French debconf translation; thanks to Christian Perrier
+  * Update German debconf translation; thanks to Helge Kreutzmann
+
+ -- Devin Carraway <devin@debian.org>  Sat, 15 Sep 2007 23:52:39 -0700
+
 qpsmtpd (0.40-1) unstable; urgency=low
 
   * New upstream release (Closes: #431933)
