@@ -29,10 +29,14 @@ install: build
 	# tcpserver-based toplevel script.  The standard install uses
 	# qpsmtpd-forkserver to avoid a non-free dependency on tcpserver.
 	rm -f $(CURDIR)/debian/qpsmtpd/usr/bin/qpsmtpd
+	# Comment out this line to omit the usual deletion of qpsmtpd-async,
+	# which is included in the main qpsmtpd distribution but has not
+	# stabilized enough for mainstream use and introduces compatibility
+	# problems with some plugins.
+	rm -f $(CURDIR)/debian/qpsmtpd/usr/bin/qpsmtpd-async
 	# /var/spool/qpsmtpd will be chown'ed by postinst
 	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/spool/qpsmtpd
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/log/qpsmtpd
-	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/run/qpsmtpd
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/var/lib/qpsmtpd
 	# greylist db dir will be chown'ed by postinst
 	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/lib/qpsmtpd/greylisting
@@ -56,7 +60,9 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs
-	dh_installman $(CURDIR)/debian/qpsmtpd-forkserver.8
+	dh_installman \
+		 $(CURDIR)/debian/qpsmtpd-forkserver.8 \
+		 $(CURDIR)/debian/qpsmtpd-prefork.8 
 	dh_installdebconf
 	dh_installlogrotate
 	dh_installchangelogs Changes
@@ -66,6 +72,8 @@ binary-indep: build install
 	dh_fixperms
 	dh_installdeb
 	dh_perl
+	# until qpsmtpd-async is supported
+	rm -f $(CURDIR)/debian/qpsmtpd/usr/share/man/man1/qpsmtpd-async.1p.gz
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
@@ -74,3 +82,4 @@ binary-indep: build install
 binary: binary-indep binary-arch
 .PHONY: clean build binary-indep binary-arch binary
 
+# vi:set noexpandtab:

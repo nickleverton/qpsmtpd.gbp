@@ -1,3 +1,15 @@
+qpsmtpd (0.81-1) unstable; urgency=low
+
+  * New upstream release (Closes: #510829)
+  * Depend on libipc-shareable-perl to enable use of qpsmtpd-prefork; prefork
+    is included in this release but is not yet used by default, pending
+    upstream support for listening on multiple sockets (Closes: #498519)
+  * Add new Spanish translation; thanks to Francisco Cuadrado
+    (Closes: #520209)
+  * Standards-Version 3.8.1
+
+ -- Devin Carraway <devin@debian.org>  Fri, 10 Apr 2009 19:38:20 -0700
+
 qpsmtpd (0.40-3) unstable; urgency=low
 
   * Update Swedish translation; thanks to Martin Ågren (Closes: #492885)

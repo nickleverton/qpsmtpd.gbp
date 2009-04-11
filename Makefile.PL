@@ -14,9 +14,9 @@ WriteMakefile(
         'File::Temp'   => 0,
         'Time::HiRes'  => 0,
     },
-    ABSTRACT_FROM  => 'README',
-    AUTHOR         => 'Ask Bjorn Hansen <ask@develooper.com>',
-    EXE_FILES      => [qw(qpsmtpd qpsmtpd-forkserver)],
+    ABSTRACT       => 'Flexible smtpd daemon written in Perl',
+    AUTHOR         => 'Ask Bjoern Hansen <ask@develooper.com>',
+    EXE_FILES      => [qw(qpsmtpd qpsmtpd-forkserver qpsmtpd-prefork qpsmtpd-async)],
 );
 
 sub MY::libscan {
@@ -25,3 +25,12 @@ sub MY::libscan {
     return $path;
 }
 
+sub MY::postamble {
+  qq[
+testcover :
+\t cover -delete && \\
+   HARNESS_PERL_SWITCHES=-MDevel::Cover \$(MAKE) test && \\
+   cover
+]
+
+}

@@ -16,7 +16,6 @@ set -e
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-[ -x "/usr/bin/qpsmtpd-forkserver" ] || exit 0
 
 PORT="25"
 RUNAS="qpsmtpd"
@@ -24,8 +23,12 @@ NICE=""
 INTERFACES=""
 LISTEN=""
 ENABLED="false"
+SERVER="prefork"
+EXTRA_ARGS=""
 
 [ -f "/etc/qpsmtpd/debconf-settings" ] && . "/etc/qpsmtpd/debconf-settings"
+
+[ -x "/usr/bin/qpsmtpd-$SERVER" ] || exit 0
 
 [ "$ENABLED" = "true" -o "$ENABLED" = "1" ] || exit 0
 
@@ -50,20 +53,20 @@ qpsmtpd_start()
 		chmod 2755 /var/run/qpsmtpd
 	fi
 	start-stop-daemon --quiet --start \
-		--exec /usr/bin/qpsmtpd-forkserver -- \
+		--exec /usr/bin/qpsmtpd-$SERVER -- \
 		--port $PORT --user $RUNAS \
 		--pid-file /var/run/qpsmtpd/qpsmtpd.pid \
-		$LISTEN --detach
+		$LISTEN --detach $EXTRA_ARGS
 }
 
 qpsmtpd_stop()
 {
-	# qpsmtpd-forkserver is a perl script, and s-s-d's --exec option
+	# qpsmtpd is a perl script, and s-s-d's --exec option
 	# would look at the interpreter path rather than the script.  More
 	# seriously, however, --exec compares devices/inodes rather than
 	# executable paths, so --exec will break every time the perl package
 	# is upgraded (see Debian Bug#337942).  So, --exec isn't used at all.
-	start-stop-daemon --quiet --stop --oknodo \
+	start-stop-daemon --quiet --stop --retry 4 --oknodo \
 		--pidfile /var/run/qpsmtpd/qpsmtpd.pid \
 		--user "$RUNAS"
 }
@@ -90,12 +93,12 @@ case "$1" in
 	start)
 		echo -n "Starting qpsmtpd: "
 		qpsmtpd_start
-		echo "qpsmtpd-forkserver."
+		echo "qpsmtpd-$SERVER."
 		;;
 	stop)
 		echo -n "Stopping qpsmtpd: "
 		qpsmtpd_stop
-		echo "qpsmtpd-forkserver."
+		echo "qpsmtpd-$SERVER."
 		;;
 	restart|reload|force-reload)
 		qpsmtpd_stop

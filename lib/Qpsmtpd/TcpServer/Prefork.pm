@@ -12,7 +12,7 @@ sub start_connection {
 
     #reset info
     $self->{_connection} = Qpsmtpd::Connection->new(); #reset connection
-    $self->{_transaction} = Qpsmtpd::Transaction->new(); #reset transaction
+    $self->reset_transaction;
     $self->SUPER::start_connection(@_);
 }
 
@@ -39,6 +39,8 @@ sub read_input {
   if ($@ =~ /^disconnect_tcpserver/) {
   	die "disconnect_tcpserver";
   } else {
+  	$self->run_hooks("post-connection");
+	$self->connection->reset;
   	die "died while reading from STDIN (probably broken sender) - $@";
   }
   alarm(0);
@@ -46,6 +48,12 @@ sub read_input {
 
 sub respond {
   my ($self, $code, @messages) = @_;
+
+  if ( !$self->check_socket() ) {
+    $self->log(LOGERROR, "Lost connection to client, cannot send response.");
+    return(0);
+  }
+
   while (my $msg = shift @messages) {
     my $line = $code . (@messages?"-":" ").$msg;
     $self->log(LOGINFO, $line);
@@ -59,6 +67,7 @@ sub disconnect {
   $self->log(LOGINFO,"click, disconnecting");
   $self->SUPER::disconnect(@_);
   $self->run_hooks("post-connection");
+  $self->connection->reset;
   die "disconnect_tcpserver";
 }
 

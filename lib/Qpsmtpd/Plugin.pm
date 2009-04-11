@@ -4,12 +4,12 @@ use strict;
 
 # more or less in the order they will fire
 our @hooks = qw(
-    logging config pre-connection connect ehlo_parse ehlo
+    logging config post-fork pre-connection connect ehlo_parse ehlo
     helo_parse helo auth_parse auth auth-plain auth-login auth-cram-md5
     rcpt_parse rcpt_pre rcpt mail_parse mail mail_pre 
-    data data_post queue_pre queue queue_post
+    data data_headers_end data_post queue_pre queue queue_post vrfy noop
     quit reset_transaction disconnect post-connection
-    unrecognized_command deny ok received_line
+    unrecognized_command deny ok received_line help
 );
 our %hooks = map { $_ => 1 } @hooks;
 
@@ -60,8 +60,8 @@ sub qp {
 
 sub log {
   my $self = shift;
-  $self->qp->varlog(shift, $self->hook_name, $self->plugin_name, @_)
-    unless defined $self->hook_name and $self->hook_name eq 'logging';
+  $self->{_qp}->varlog(shift, $self->{_hook}, $self->plugin_name, @_)
+    unless defined $self->{_hook} and $self->{_hook} eq 'logging';
 }
 
 sub transaction {
@@ -117,9 +117,19 @@ sub isa_plugin {
   # don't reload plugins if they are already loaded
   return if defined &{"${newPackage}::plugin_name"};
 
+  # find $parent in plugin_dirs
+  my $parent_dir;
+  for ($self->qp->plugin_dirs) {
+    if (-e "$_/$parent") {
+      $parent_dir = $_;
+      last;
+    }
+  }
+  die "cannot find plugin '$parent'" unless $parent_dir;
+
   $self->compile($self->plugin_name . "_isa_$cleanParent",
                     $newPackage,
-                    "plugins/$parent"); # assumes Cwd is qpsmtpd root
+                    "$parent_dir/$parent");
   warn "---- $newPackage\n";
   no strict 'refs';
   push @{"${currentPackage}::ISA"}, $newPackage;

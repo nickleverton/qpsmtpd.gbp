@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: qpsmtpd 0.40-1\n"
-"Report-Msgid-Bugs-To: devin@debian.org\n"
-"POT-Creation-Date: 2007-07-22 23:41-0700\n"
+"Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
+"POT-Creation-Date: 2009-04-18 16:10-0700\n"
 "PO-Revision-Date: 2007-09-09 14:24+0100\n"
 "Last-Translator: Tiago Fernandes <tjg.fernandes@gmail.com>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -43,12 +43,12 @@ msgid ""
 "common MTAs to work with qpsmtpd can be found after installation in /usr/"
 "share/doc/qpsmtpd/README.Debian."
 msgstr ""
-"Antes de activar o qpsmtpd, deve primeiro configurar o seu MTA local para não "
-"se associar á porta STMP TCP de pelo menos uma interface. A melhor aproximação "
-"passa por deixar o seu MTA a escutar na interface de loopback (127.0.0.1), com "
-"o qpsmtpd escutando na interface externa. Podem ser encontradas instruções "
-"para configurar os MTAs mais comuns após a instalação em "
-"/usr/share/doc/qpsmtpd/README.Debian. "
+"Antes de activar o qpsmtpd, deve primeiro configurar o seu MTA local para "
+"não se associar á porta STMP TCP de pelo menos uma interface. A melhor "
+"aproximação passa por deixar o seu MTA a escutar na interface de loopback "
+"(127.0.0.1), com o qpsmtpd escutando na interface externa. Podem ser "
+"encontradas instruções para configurar os MTAs mais comuns após a instalação "
+"em /usr/share/doc/qpsmtpd/README.Debian. "
 
 #. Type: boolean
 #. Description
@@ -57,8 +57,8 @@ msgid ""
 "Once you have adjusted your MTA configuration, you can enable qpsmtpd by "
 "restarting this configuration, by running 'dpkg-reconfigure qpsmtpd'."
 msgstr ""
-"Após ter ajustado a configuração do seu MTA, pode activar o qpsmtpd relançando "
-"esta configuração, executando 'dpkg-reconfigure qpsmtpd'."
+"Após ter ajustado a configuração do seu MTA, pode activar o qpsmtpd "
+"relançando esta configuração, executando 'dpkg-reconfigure qpsmtpd'."
 
 #. Type: string
 #. Description
@@ -75,9 +75,9 @@ msgid ""
 "setting empty, qpsmtpd will listen on all interfaces available at startup "
 "time."
 msgstr ""
-"Insira um ou mais dos seus endereços IP locais, separados por espaços, onde o "
-"qpsmtpd deve escutar por ligações SMTP.  Se deixar esta opção vazia, o qpsmtpd "
-"irá escutar em todos os interfaces disponíveis durante o arranque."
+"Insira um ou mais dos seus endereços IP locais, separados por espaços, onde "
+"o qpsmtpd deve escutar por ligações SMTP.  Se deixar esta opção vazia, o "
+"qpsmtpd irá escutar em todos os interfaces disponíveis durante o arranque."
 
 #. Type: string
 #. Description
@@ -88,9 +88,9 @@ msgid ""
 "while leaving your local MTA listening on the loopback device (127.0.0.1)."
 msgstr ""
 "Se tencionar usar o qpsmtpd para fazer entregas a partir de maquinas remotas "
-"para um MTA local, poderá desejar que o qpsmtpd escute em todos os interfaces "
-"externos, enquanto que o seu MTA local escutará no dispositivo loopback "
-"(127.0.0.1)."
+"para um MTA local, poderá desejar que o qpsmtpd escute em todos os "
+"interfaces externos, enquanto que o seu MTA local escutará no dispositivo "
+"loopback (127.0.0.1)."
 
 #. Type: select
 #. Description
@@ -106,8 +106,8 @@ msgid ""
 "you deliver your mail locally, choose the method corresponding to the "
 "installed MTA (the installer will try to pick the correct default.)"
 msgstr ""
-"Seleccione o método de fila de espera para o mail entregue via SMTP. "
-"Se entrega o seu mail localmente, escolha o método correspondente ao do MTA "
+"Seleccione o método de fila de espera para o mail entregue via SMTP. Se "
+"entrega o seu mail localmente, escolha o método correspondente ao do MTA "
 "instalado (o installer irá tentar escolher a prédefinição correcta.)"
 
 #. Type: select
@@ -119,8 +119,8 @@ msgid ""
 "host."
 msgstr ""
 "Seleccione \"proxy\" se preferir que o qpsmtp funcione como um proxy SMTP "
-"para outro MTA (local ou remoto). Depois será pedido para inserir uma máquina "
-"de destino."
+"para outro MTA (local ou remoto). Depois será pedido para inserir uma "
+"máquina de destino."
 
 #. Type: select
 #. Description
@@ -129,9 +129,9 @@ msgid ""
 "Select \"maildir\" to have qpsmtpd deliver into a local maildir-format spool "
 "instead of queueing it for delivery (e.g. if you're setting up a spamtrap.)"
 msgstr ""
-"Seleccione \"maildir\" para ter o qpsmtp a entregar localmente numa fila local "
-"de formado maildir em vez de colocar em fila de espera para entrega "
-"(p.ex. se está a preparar uma spamtrap.)"
+"Seleccione \"maildir\" para ter o qpsmtp a entregar localmente numa fila "
+"local de formado maildir em vez de colocar em fila de espera para entrega (p."
+"ex. se está a preparar uma spamtrap.)"
 
 #. Type: select
 #. Description
@@ -157,9 +157,10 @@ msgid ""
 "or IP address of that host here.  You can optionally add a port number after "
 "a colon, such as \"localhost:25\"."
 msgstr ""
-"Para ter o qpsmtpd a funcionar para outra máquina como um proxy SMTP, forneça "
-"aqui o nome ou endereço IP dessa máquina. Pode, opcionalmente, adicionar "
-"depois dos dois pontos um numero de porta, como por exemplo \"localhost:25\"."
+"Para ter o qpsmtpd a funcionar para outra máquina como um proxy SMTP, "
+"forneça aqui o nome ou endereço IP dessa máquina. Pode, opcionalmente, "
+"adicionar depois dos dois pontos um numero de porta, como por exemplo "
+"\"localhost:25\"."
 
 #. Type: string
 #. Description
@@ -196,8 +197,8 @@ msgid ""
 "potential cost of wasted bandwidth and eventual bouncing of possibly "
 "legitimate mail."
 msgstr ""
-"Seleccionando \"none\" como um plugin de fila de espera, terá desactivado "
-"a fila de espera local do mail que entra. Isto impedirá o qpsmtpd de colocar "
+"Seleccionando \"none\" como um plugin de fila de espera, terá desactivado a "
+"fila de espera local do mail que entra. Isto impedirá o qpsmtpd de colocar "
 "qualquer mail em fila de espera até que você configure manualmente o método "
 "de fila de espera. Qualquer máquina que tente entregar mail a você, irá "
 "entretanto receber mensagens 4xx soft-failure, com um potencial custo de "
@@ -213,17 +214,18 @@ msgid ""
 "SMTP proxy method instead, configuring it to proxy into your MTA on a "
 "suitable local address/port."
 msgstr ""
-"Para configurar manualmente a fila de espera, edite /etc/qpsmtpd/plugins "
-"e seleccione um dos métodos de fila de espera ai listados. Se não viu o seu "
-"MTA na lista e não têm a certeza qual escolher, escolha \"Cancel\" aqui "
-"e seleccione o método proxy SMTP, configurando-o para fazer proxy do seu MTA, "
+"Para configurar manualmente a fila de espera, edite /etc/qpsmtpd/plugins e "
+"seleccione um dos métodos de fila de espera ai listados. Se não viu o seu "
+"MTA na lista e não têm a certeza qual escolher, escolha \"Cancel\" aqui e "
+"seleccione o método proxy SMTP, configurando-o para fazer proxy do seu MTA, "
 "num endereço local válido endereço/porta."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:7001
 msgid "Destination domain(s) to accept mail for (blank for none):"
-msgstr "Domínio(s) de destino para aceitar mail (deixar em branco para nenhum):"
+msgstr ""
+"Domínio(s) de destino para aceitar mail (deixar em branco para nenhum):"
 
 #. Type: string
 #. Description
@@ -239,11 +241,11 @@ msgid ""
 msgstr ""
 "Insira uma lista com nome(s) de domínio para os quais o qpsmtpd deve aceitar "
 "mail, separados por espaços. Esta lista deverá incluir qualquer maquina ou "
-"domínio para o qual tenciona aceitar mail para entregar localmente, assim como "
-"qualquer domínio para o qual queira actuar como mail relay. Em geral, "
+"domínio para o qual tenciona aceitar mail para entregar localmente, assim "
+"como qualquer domínio para o qual queira actuar como mail relay. Em geral, "
 "se tenciona colocar em fila de espera num MTA local, esta lista deverá ser a "
-"mesma usada para esse MTA "
-"(o instalador tentará extrair essas opções como prédefinição.)"
+"mesma usada para esse MTA (o instalador tentará extrair essas opções como "
+"prédefinição.)"
 
 #. Type: string
 #. Description
@@ -252,6 +254,5 @@ msgid ""
 "If you prefer to manage this list manually, leave the entry blank and edit "
 "the file /etc/qpsmtpd/rcpthosts."
 msgstr ""
-"Se preferir gerir manualmente esta lista, deixe em branco e edite o ficheiro "
-"/etc/qpsmtpd/rcpthosts."
-
+"Se preferir gerir manualmente esta lista, deixe em branco e edite o "
+"ficheiro /etc/qpsmtpd/rcpthosts."

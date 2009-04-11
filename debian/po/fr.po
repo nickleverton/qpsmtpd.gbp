@@ -14,8 +14,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: qpsmtpd_0.32-3\n"
-"Report-Msgid-Bugs-To: devin@debian.org\n"
-"POT-Creation-Date: 2007-07-22 23:41-0700\n"
+"Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
+"POT-Creation-Date: 2009-04-18 16:10-0700\n"
 "PO-Revision-Date: 2006-07-19 12:33+0100\n"
 "Last-Translator: Steve Petruzzello <dlist@bluewin.ch>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
@@ -143,9 +143,9 @@ msgid ""
 "Select \"maildir\" to have qpsmtpd deliver into a local maildir-format spool "
 "instead of queueing it for delivery (e.g. if you're setting up a spamtrap.)"
 msgstr ""
-"Veuillez choisir « maildir » pour que qpsmtpd place le courrier dans une "
-"file d'attente locale au format maildir, plutôt que de le mettre en attente "
-"(p. ex. si vous installez un piège à pourriel)."
+"Veuillez choisir « maildir » pour que qpsmtpd place le courrier dans une file "
+"d'attente locale au format maildir, plutôt que de le mettre en attente (p. "
+"ex. si vous installez un piège à pourriel)."
 
 #. Type: select
 #. Description

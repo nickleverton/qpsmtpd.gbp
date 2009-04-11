@@ -4,6 +4,9 @@ use Qpsmtpd;
 use strict;
 use Qpsmtpd::Utils;
 use Qpsmtpd::Constants;
+use Socket qw(inet_aton);
+use Sys::Hostname;
+use Time::HiRes qw(gettimeofday);
 
 use IO::File qw(O_RDWR O_CREAT);
 
@@ -13,14 +16,21 @@ sub start {
   my $proto = shift;
   my $class = ref($proto) || $proto;
   my %args = @_;
-  my $self = { _rcpt => [], started => time };
+  
+  my $self = { _rcpt => [], started => time, };
   bless ($self, $class);
   return $self;
 }
 
 sub add_recipient {
-  my $self = shift;
-  @_ and push @{$self->{_recipients}}, shift;
+    my ($self, $rcpt) = @_;
+    push @{$self->{_recipients}}, $rcpt if $rcpt;
+}
+
+sub remove_recipient {
+  my ($self,$rcpt) = @_;
+  $self->{_recipients} = [grep {$_->address ne $rcpt->address}
+                               @{$self->{_recipients} || []}] if $rcpt;
 }
 
 sub recipients {
@@ -265,6 +275,13 @@ latter is done for you by qpsmtpd.
 =head2 add_recipient($recipient)
 
 This adds a new recipient (as in RCPT TO) to the envelope of the mail.
+
+The C<$recipient> is a C<Qpsmtpd::Address> object. See L<Qpsmtpd::Address>
+for more details.
+
+=head2 remove_recipient($recipient)
+
+This removes a recipient (as in RCPT TO) from the envelope of the mail.
 
 The C<$recipient> is a C<Qpsmtpd::Address> object. See L<Qpsmtpd::Address>
 for more details.

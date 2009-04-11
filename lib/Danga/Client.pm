@@ -2,7 +2,15 @@
 
 package Danga::Client;
 use base 'Danga::TimeoutSocket';
-use fields qw(line pause_count read_bytes data_bytes callback get_chunks);
+use fields qw(
+    line
+    pause_count
+    read_bytes
+    data_bytes
+    callback
+    get_chunks
+    reader_object
+    );
 use Time::HiRes ();
 
 use bytes;
@@ -26,6 +34,7 @@ sub reset_for_next_message {
     $self->{pause_count} = 0;
     $self->{read_bytes} = 0;
     $self->{callback} = undef;
+    $self->{reader_object} = undef;
     $self->{data_bytes} = '';
     $self->{get_chunks} = 0;
     return $self;
@@ -54,6 +63,26 @@ sub get_bytes {
     $self->{callback} = $callback;
 }
 
+sub process_chunk {
+    my Danga::Client $self = shift;
+    my $callback = shift;
+
+    my $last_crlf = rindex($self->{line}, "\r\n");
+
+    if ($last_crlf != -1) {
+        if ($last_crlf + 2 == length($self->{line})) {
+            my $data = $self->{line};
+            $self->{line} = '';
+            $callback->($data);
+        }
+        else {
+            my $data = substr($self->{line}, 0, $last_crlf + 2);
+            $self->{line} = substr($self->{line}, $last_crlf + 2);
+            $callback->($data);
+        }
+    }
+}
+
 sub get_chunks {
     my Danga::Client $self = shift;
     my ($bytes, $callback) = @_;
@@ -61,8 +90,7 @@ sub get_chunks {
         die "get_bytes/get_chunks currently in progress!";
     }
     $self->{read_bytes} = $bytes;
-    $callback->($self->{line}) if length($self->{line});
-    $self->{line} = '';
+    $self->process_chunk($callback) if length($self->{line});
     $self->{callback} = $callback;
     $self->{get_chunks} = 1;
 }
@@ -77,14 +105,24 @@ sub end_get_chunks {
     }
 }
 
+sub set_reader_object {
+    my Danga::Client $self = shift;
+    $self->{reader_object} = shift;
+}
+
 sub event_read {
     my Danga::Client $self = shift;
-    if ($self->{callback}) {
+    if (my $obj = $self->{reader_object}) {
+        $self->{reader_object} = undef;
+        $obj->event_read($self);
+    }
+    elsif ($self->{callback}) {
         $self->{alive_time} = time;
         if ($self->{get_chunks}) {
             my $bref = $self->read($self->{read_bytes});
             return $self->close($!) unless defined $bref;
-            $self->{callback}->($$bref) if length($$bref);
+            $self->{line} .= $$bref;
+            $self->process_chunk($self->{callback}) if length($self->{line});
             return;
         }
         if ($self->{read_bytes} > 0) {
@@ -113,7 +151,7 @@ sub process_read_buf {
     $self->{line} .= $$bref;
     return if $self->{pause_count} || $self->{closed};
     
-    while ($self->{line} =~ s/^(.*?\n)//) {
+    if ($self->{line} =~ s/^(.*?\n)//) {
         my $line = $1;
         $self->{alive_time} = time;
         my $resp = $self->process_line($line);
@@ -121,6 +159,12 @@ sub process_read_buf {
         $self->write($resp) if $resp;
         # $self->watch_read(0) if $self->{pause_count};
         return if $self->{pause_count} || $self->{closed};
+        # read more in a timer, to give other clients a look in
+        $self->AddTimer(0, sub {
+            if (length($self->{line}) && !$self->paused) {
+                $self->process_read_buf(\""); # " for bad syntax highlighters
+            }
+        });
     }
 }
 

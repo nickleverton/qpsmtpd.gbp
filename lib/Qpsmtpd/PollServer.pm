@@ -1,5 +1,3 @@
-# $Id: Server.pm,v 1.10 2005/02/14 22:04:48 msergeant Exp $
-
 package Qpsmtpd::PollServer;
 
 use base ('Danga::Client', 'Qpsmtpd::SMTP');
@@ -24,10 +22,10 @@ use fields qw(
     _commands
     _config_cache
     _connection
-    _transaction
-    _test_mode
-    _extras
     _continuation
+    _extras
+    _test_mode
+    _transaction
 );
 use Qpsmtpd::Constants;
 use Qpsmtpd::Address;
@@ -57,6 +55,21 @@ sub new {
     $self->{mode} = 'connect';
     $self->load_plugins;
     $self->load_logging;
+
+    my ($rc, @msg) = $self->run_hooks_no_respond("pre-connection");
+    if ($rc == DENYSOFT || $rc == DENYSOFT_DISCONNECT) {
+        @msg = ("Sorry, try again later")
+          unless @msg;
+        $self->respond(451, @msg);
+        $self->disconnect;
+    }
+    elsif ($rc == DENY || $rc == DENY_DISCONNECT) {
+        @msg = ("Sorry, service not available for you")
+          unless @msg;
+        $self->respond(550, @msg);
+        $self->disconnect;
+    }
+
     return $self;
 }
 
@@ -103,65 +116,57 @@ sub fault {
     return;
 }
 
+my %cmd_cache;
+
 sub process_line {
     my Qpsmtpd::PollServer $self = shift;
     my $line = shift || return;
     if ($::DEBUG > 1) { print "$$:".($self+0)."C($self->{mode}): $line"; }
-    eval { $self->_process_line($line) };
-    if ($@) {
-        print STDERR "Error: $@\n";
-        return $self->fault("command failed unexpectedly") if $self->{mode} eq 'cmd';
-        return $self->fault("unknown error");
+    if ($self->{mode} eq 'cmd') {
+        $line =~ s/\r?\n$//s;
+        $self->connection->notes('original_string', $line);
+        my ($cmd, @params) = split(/ +/, $line, 2);
+        my $meth = lc($cmd);
+        if (my $lookup = $cmd_cache{$meth} || $self->{_commands}->{$meth} && $self->can($meth)) {
+            $cmd_cache{$meth} = $lookup;
+            eval {
+                $lookup->($self, @params);
+            };
+            if ($@) {
+                my $error = $@;
+                chomp($error);
+                $self->log(LOGERROR, "Command Error: $error");
+                $self->fault("command '$cmd' failed unexpectedly");
+            }
+        }
+        else {
+            # No such method - i.e. unrecognized command
+            my ($rc, $msg) = $self->run_hooks("unrecognized_command", $meth, @params);
+        }
     }
-    return;
-}
-
-sub _process_line {
-    my Qpsmtpd::PollServer $self = shift;
-    my $line = shift;
-    
-    if ($self->{mode} eq 'connect') {
+    elsif ($self->{mode} eq 'connect') {
         $self->{mode} = 'cmd';
-        my $rc = $self->start_conversation;
-        return;
-    }
-    elsif ($self->{mode} eq 'cmd') {
-        $line =~ s/\r?\n//;
-        return $self->process_cmd($line);
+        # I've removed an eval{} from around this. It shouldn't ever die()
+        # but if it does we're a bit screwed... Ah well :-)
+        $self->start_conversation;
     }
     else {
         die "Unknown mode";
     }
-}
-
-sub process_cmd {
-    my Qpsmtpd::PollServer $self = shift;
-    my $line = shift;
-    my ($cmd, @params) = split(/ +/, $line, 2);
-    my $meth = lc($cmd);
-    if (my $lookup = $self->{_commands}->{$meth} && $self->can($meth)) {
-        my $resp = eval {
-            $lookup->($self, @params);
-        };
-        if ($@) {
-            my $error = $@;
-            chomp($error);
-            $self->log(LOGERROR, "Command Error: $error");
-            return $self->fault("command '$cmd' failed unexpectedly");
-        }
-        return $resp;
-    }
-    else {
-        # No such method - i.e. unrecognized command
-        my ($rc, $msg) = $self->run_hooks("unrecognized_command", $meth, @params);
-        return 1;
-    }
+    return;
 }
 
 sub disconnect {
     my Qpsmtpd::PollServer $self = shift;
     $self->SUPER::disconnect(@_);
     $self->close;
+}
+
+sub close {
+    my Qpsmtpd::PollServer $self = shift;
+    $self->run_hooks_no_respond("post-connection");
+    $self->connection->reset;
+    $self->SUPER::close;
 }
 
 sub start_conversation {
@@ -174,8 +179,12 @@ sub start_conversation {
     $conn->remote_ip($ip);
     $conn->remote_port($port);
     $conn->remote_info("[$ip]");
+    my ($lip,$lport) = split(':', $self->local_addr_string);
+    $conn->local_ip($lip);
+    $conn->local_port($lport);
+    
     ParaDNS->new(
-        finished   => sub { $self->run_hooks("connect") },
+        finished   => sub { $self->continue_read(); $self->run_hooks("connect") },
         # NB: Setting remote_info to the same as remote_host
         callback   => sub { $conn->remote_info($conn->remote_host($_[0])) },
         host       => $ip,
@@ -198,22 +207,26 @@ sub data_respond {
         return;
     }
     elsif ($rc == DENY) {
-        $self->respond(554, $msg || "Message denied");
+        $msg->[0] ||= "Message denied";
+        $self->respond(554, @$msg);
         $self->reset_transaction();
         return;
     }
     elsif ($rc == DENYSOFT) {
-        $self->respond(451, $msg || "Message denied temporarily");
+        $msg->[0] ||= "Message denied temporarily";
+        $self->respond(451, @$msg);
         $self->reset_transaction();
         return;
     } 
     elsif ($rc == DENY_DISCONNECT) {
-        $self->respond(554, $msg || "Message denied");
+        $msg->[0] ||= "Message denied";
+        $self->respond(554, @$msg);
         $self->disconnect;
         return;
     }
     elsif ($rc == DENYSOFT_DISCONNECT) {
-        $self->respond(451, $msg || "Message denied temporarily");
+        $msg->[0] ||= "Message denied temporarily";
+        $self->respond(451, @$msg);
         $self->disconnect;
         return;
     }
@@ -250,35 +263,36 @@ sub got_data {
         $data =~ s/\r\n/\n/mg;
         $data =~ s/^\.\./\./mg;
         
-        if ($self->{in_header} and $data =~ s/\A(.*?\n)\n/\n/ms) {
-            $self->{header_lines} .= $1;
-            # end of headers
-            $self->{in_header} = 0;
-            
-            # ... need to check that we don't reformat any of the received lines.
-            #
-            # 3.8.2 Received Lines in Gatewaying
-            #   When forwarding a message into or out of the Internet environment, a
-            #   gateway MUST prepend a Received: line, but it MUST NOT alter in any
-            #   way a Received: line that is already in the header.
-            my @header_lines = split(/^/m, $self->{header_lines});
-    
-            my $header = Mail::Header->new(\@header_lines,
-                                            Modify => 0, MailFrom => "COERCE");
-            $self->transaction->header($header);
-            $self->{header_lines} = '';
-
-            #$header->add("X-SMTPD", "qpsmtpd/".$self->version.", http://smtpd.develooper.com/");
-    
-            # FIXME - call plugins to work on just the header here; can
-            # save us buffering the mail content.
-            
-            # Save the start of just the body itself	
-            $self->transaction->set_body_start();
-        }
-        
         if ($self->{in_header}) {
             $self->{header_lines} .= $data;
+            
+            if ($self->{header_lines} =~ s/\n(\n.*)\z/\n/ms) {
+                $data = $1;
+                # end of headers
+                $self->{in_header} = 0;
+                
+                # ... need to check that we don't reformat any of the received lines.
+                #
+                # 3.8.2 Received Lines in Gatewaying
+                #   When forwarding a message into or out of the Internet environment, a
+                #   gateway MUST prepend a Received: line, but it MUST NOT alter in any
+                #   way a Received: line that is already in the header.
+                my @header_lines = split(/^/m, $self->{header_lines});
+    
+                my $header = Mail::Header->new(\@header_lines,
+                                                Modify => 0, MailFrom => "COERCE");
+                $self->transaction->header($header);
+                $self->transaction->body_write($self->{header_lines});
+                $self->{header_lines} = '';
+
+                #$header->add("X-SMTPD", "qpsmtpd/".$self->version.", http://smtpd.develooper.com/");
+    
+                # FIXME - call plugins to work on just the header here; can
+                # save us buffering the mail content.
+            
+                # Save the start of just the body itself	
+                $self->transaction->set_body_start();
+            }
         }
 
         $self->transaction->body_write(\$data);
@@ -299,8 +313,6 @@ sub end_of_data {
     #$self->log(LOGDEBUG, "size is at $size\n") unless ($i % 300);
     
     $self->log(LOGDEBUG, "max_size: $self->{max_size} / size: $self->{data_size}");
-    
-    my $smtp = $self->connection->hello eq "ehlo" ? "ESMTP" : "SMTP";
     
     my $header = $self->transaction->header;
     if (!$header) {
