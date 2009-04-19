@@ -1,3 +1,11 @@
+qpsmtpd (0.81-2) unstable; urgency=low
+
+  * Switch the default server type back to forkserver; 0.81-1 inadvertantly
+    used prefork as a default.
+  * Depend on libsocket6-perl, since dh_perl won't pick it up without help.
+
+ -- Devin Carraway <devin@debian.org>  Sun, 19 Apr 2009 12:47:21 -0700
+
 qpsmtpd (0.81-1) unstable; urgency=low
 
   * New upstream release (Closes: #510829)

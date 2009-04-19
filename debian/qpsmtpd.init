@@ -23,7 +23,7 @@ NICE=""
 INTERFACES=""
 LISTEN=""
 ENABLED="false"
-SERVER="prefork"
+SERVER="forkserver"
 EXTRA_ARGS=""
 
 [ -f "/etc/qpsmtpd/debconf-settings" ] && . "/etc/qpsmtpd/debconf-settings"
