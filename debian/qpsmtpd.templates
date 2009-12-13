@@ -15,6 +15,18 @@ _Description: Enable qpsmtpd startup at boot time?
  Once you have adjusted your MTA configuration, you can enable qpsmtpd by
  restarting this configuration, by running 'dpkg-reconfigure qpsmtpd'.
 
+Template: qpsmtpd/server_type
+Type: select
+Choices: forkserver, prefork
+Default: forkserver
+_Description: Qpsmtpd server type:
+ Qpsmtpd supports two process models for handling connections.  The
+ 'forkserver' model uses a single process when idle, and forks new processes
+ to handle connections.  This uses less memory but slightly reduces
+ server throughput.  The 'prefork' model keeps a pool of idle processes
+ available to handle new connections, offering slightly better performance
+ at the cost of more memory.
+
 Template: qpsmtpd/listen_interfaces
 Type: string
 Default: unset
@@ -27,6 +39,10 @@ _Description: Addresses on which to listen for incoming SMTP connections:
  If you intend to use qpsmtpd to spool deliveries from remote hosts into a
  local MTA, you may wish to have qpsmtpd listen on all external interfaces,
  while leaving your local MTA listening on the loopback device (127.0.0.1).
+ .
+ For each interface you may optionally specify a port to listen on instead
+ of the default port 25; do this by appending :<port> to the interface, as
+ in "127.0.0.1:2526".
 
 Template: qpsmtpd/queue_plugin
 Type: select

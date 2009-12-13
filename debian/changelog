@@ -1,3 +1,20 @@
+qpsmtpd (0.83-1) unstable; urgency=low
+
+  * New upstream release.
+  * Update Czech debconf translation (Closes: #534795)
+  * Add Russian debconf translation; thanks to Yuri Kozlov (Closes: #554355)
+  * Reorder postinst to remove the qpsmtpd user only after dropping
+    statoverrides that depend on it
+  * Offer forkserver and prefork server types as debconf options
+    (Closes: #414162)
+  * Tidy/fix qpsmtpd.config (Closes: #560343)
+  * Expand interface selection debconf template to explain optional port
+    selection (Closes: #540791)
+  * Standards-Version 3.8.3
+  * (Some) lintian fixes
+
+ -- Devin Carraway <devin@debian.org>  Sat, 12 Dec 2009 23:57:54 -0800
+
 qpsmtpd (0.81-2) unstable; urgency=low
 
   * Switch the default server type back to forkserver; 0.81-1 inadvertantly

@@ -1,4 +1,1 @@
-clamdscan_plugin_use_new_clamav_client.patch.dpatch
-listen_address_cmdline_synonym.patch.dpatch
-prefork_taint_abort.patch.dpatch
 require_resolvable_fromhost-enable.patch.dpatch

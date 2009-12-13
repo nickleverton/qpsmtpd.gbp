@@ -24,6 +24,9 @@ setup_debconf()
 	db_get qpsmtpd/startup_enabled
 	ENABLED="$RET"
 
+	db_get qpsmtpd/server_type
+	SERVER="$RET"
+
 	db_get qpsmtpd/listen_interfaces
 	INTERFACES="$RET"
 
@@ -47,6 +50,7 @@ setup_debconf()
 # settings, run 'dpkg-reconfigure qpsmtpd'.
 EOT
 	  echo "ENABLED=\"$ENABLED\""
+	  echo "SERVER=\"$SERVER\""
 	  echo "INTERFACES=\"$INTERFACES\""
 	  echo "QUEUE_PLUGIN=\"$QUEUE_PLUGIN\""
 	  echo "QUEUE_MAILDIR_DESTINATION=\"$QUEUE_MAILDIR_DESTINATION\""

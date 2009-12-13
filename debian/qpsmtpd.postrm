@@ -14,9 +14,6 @@ PIDDIR=/var/run/qpsmtpd
 
 case "$1" in
 	purge)
-		# remove the run-as user
-		deluser --quiet "$Q_USER" || true
-
 		# purge the maintainer script-generated configs
 		rm -f /etc/qpsmtpd/debconf-settings \
 			/etc/qpsmtpd/debian-queue-method \
@@ -32,11 +29,10 @@ case "$1" in
 			fi
 		done
 
-		# purge debconf settings
-		if [ -e /usr/share/debconf/confmodule ] ; then
-			. /usr/share/debconf/confmodule
-			db_purge
-		fi
+        # debconf purge will be inserted by debhelper
+
+		# remove the run-as user
+		deluser --quiet "$Q_USER" || true
 		;;
 	*)
 		;;

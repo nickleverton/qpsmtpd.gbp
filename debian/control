@@ -3,7 +3,7 @@ Section: mail
 Priority: extra
 Build-Depends: dpatch, debhelper (>> 5), perl
 Maintainer: Devin Carraway <devin@debian.org>
-Standards-Version: 3.8.1
+Standards-Version: 3.8.3
 
 Package: qpsmtpd
 Architecture: all
