@@ -1,13 +1,13 @@
 # Translation of qpsmtpd debconf templates to German
-# Copyright (C) Helge Kreutzmann <debian@helgefjell.de>, 2007.
+# Copyright (C) Helge Kreutzmann <debian@helgefjell.de>, 2007, 2009.
 # This file is distributed under the same license as the qpsmtpd package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: qpsmtpd 0.32-6\n"
+"Project-Id-Version: qpsmtpd 0.83-1\n"
 "Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
 "POT-Creation-Date: 2009-12-14 01:40-0800\n"
-"PO-Revision-Date: 2007-08-06 21:36+0200\n"
+"PO-Revision-Date: 2009-12-27 15:03+0100\n"
 "Last-Translator: Helge Kreutzmann <debian@helgefjell.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. Description
 #: ../qpsmtpd.templates:1001
 msgid "Enable qpsmtpd startup at boot time?"
-msgstr "Qpsmtpd beim Booten auch starten?"
+msgstr "Qpsmtpd beim Booten starten?"
 
 #. Type: boolean
 #. Description
@@ -44,8 +44,8 @@ msgid ""
 msgstr ""
 "Bevor Sie Qpsmtpd aktivieren, müssen Sie zuerst Ihren lokalen MTA so "
 "konfigurieren, dass er sich zumindestens auf einer Schnittstelle nicht an "
-"den SMTP TCP-Port bindet. Der häufigste Ansatz ist, Ihren MTA an der "
-"loopback-Schnittstelle (127.0.0.1) auf Anfragen warten zu lassen, während "
+"den SMTP-TCP-Port bindet. Der häufigste Ansatz ist, Ihren MTA an der "
+"Loopback-Schnittstelle (127.0.0.1) auf Anfragen warten zu lassen, während "
 "Qpsmtpd auf der externen Schnittstelle wartet. Anleitungen, wie verbreitete "
 "MTAs so konfiguriert werden, dass sie mit Qpsmtpd zusammen arbeiten, können "
 "nach der Installation in /usr/share/doc/qpsmtpd/README.Debian gefunden "
@@ -66,7 +66,7 @@ msgstr ""
 #. Description
 #: ../qpsmtpd.templates:2001
 msgid "Qpsmtpd server type:"
-msgstr ""
+msgstr "Qpsmtpd-Servertyp:"
 
 #. Type: select
 #. Description
@@ -79,6 +79,13 @@ msgid ""
 "handle new connections, offering slightly better performance at the cost of "
 "more memory."
 msgstr ""
+"Qpsmtpd unterstützt zwei Prozessmodelle für den Umgang mit Verbindungen. Das "
+"Modell »forkserver« verwendet im Leerlauf einen einzelnen Prozess und "
+"erzeugt neue Prozesse, um Verbindungen zu bedienen. Dies verbraucht weniger "
+"Speicher, reduziert aber leicht den Serverdurchsatz. Das Modell »prefork« "
+"hält ein Reservoir an Prozessen im Leerlauf vor, um neue Verbindungen zu "
+"bedienen. Damit wird eine leicht bessere Leistung auf Kosten von mehr "
+"Speicher ermöglicht."
 
 #. Type: string
 #. Description
@@ -110,9 +117,9 @@ msgid ""
 "while leaving your local MTA listening on the loopback device (127.0.0.1)."
 msgstr ""
 "Falls Sie planen, Qpsmtpd zum Zwischenlagern (»spoolen«) von Auslieferungen "
-"entfernter Rechner an einen lokale MTA zu verwenden, könnte es in Ihrem "
+"entfernter Rechner an einen lokalen MTA zu verwenden, könnte es in Ihrem "
 "Sinne sein, Qpsmtpd auf allen externen Schnittstellen warten zu lassen, "
-"während Ihr lokaler MTA auf dem loopback-Gerät (127.0.0.1) wartet."
+"während Ihr lokaler MTA auf dem Loopback-Gerät (127.0.0.1) wartet."
 
 #. Type: string
 #. Description
@@ -122,6 +129,9 @@ msgid ""
 "the default port 25; do this by appending :<port> to the interface, as in "
 "\"127.0.0.1:2526\"."
 msgstr ""
+"Für jede Schnittstelle können Sie optional einen Port, an den auf Anfragen "
+"gewartet werden soll (statt des Standardports 25), angegeben werden. Fügen "
+"Sie hierzu :<Port> zu der Schnittstelle hinzu, wie in »127.0.0.1:2526«."
 
 #. Type: select
 #. Description
@@ -181,7 +191,7 @@ msgstr ""
 #. Description
 #: ../qpsmtpd.templates:5001
 msgid "Destination host/port for SMTP proxy delivery:"
-msgstr "Ziel-Rechner/Port für Proxy-Zustellung:"
+msgstr "Ziel-Rechner/-Port für Proxy-Zustellung:"
 
 #. Type: string
 #. Description
@@ -235,9 +245,9 @@ msgstr ""
 "Sie das lokale Einstellen in eine Warteschlange für eingehende E-Mail "
 "deaktiviert. Damit wird keine E-Mail von Qpsmtpd zwischengelagert, bis Sie "
 "manuell eine Warteschlangenmethode konfigurieren. Jeder Rechner, der "
-"versucht, E-Mails an Sie zuzustellen, wird bis dahin 4xx-Fehler erhalten. "
-"Damit wird möglicherweise Bandbreite verschwendet und schließlich wird "
-"möglicherweise legitime E-Mail zurückgewiesen."
+"versucht, E-Mails an Sie zuzustellen, wird bis dahin nicht schwerwiegendene "
+"4xx-Fehler erhalten. Damit wird möglicherweise Bandbreite verschwendet und "
+"schließlich wird möglicherweise legitime E-Mail zurückgewiesen."
 
 #. Type: boolean
 #. Description
@@ -253,9 +263,9 @@ msgstr ""
 "plugins und wählen Sie eine der dort aufgeführten Warteschlangenmethoden "
 "aus. Falls Sie Ihren installierten MTA nicht in der Liste gesehen haben und "
 "sich nicht sicher sind, was Sie tun sollen, wählen Sie hier »Abbruch« und "
-"wählen Sie stattdessen die SMTP-Proxy-Methode. Konfigurieren Sie Qpsmtpd "
-"dann so, dass es Proxy für Ihren lokalen MTA auf einer geeigneten lokalen "
-"Adresse/Port-Kombination ist."
+"stattdessen die SMTP-Proxy-Methode. Konfigurieren Sie Qpsmtpd dann so, dass "
+"es Proxy für Ihren lokalen MTA auf einer geeigneten lokalen Adresse/Port-"
+"Kombination ist."
 
 #. Type: string
 #. Description

@@ -1,30 +1,22 @@
-# translation of qpsmtpd_0.40-2_sv.po to Swedish
-# Translators, if you are not familiar with the PO format, gettext
-# documentation is worth reading, especially sections dedicated to
-# this format, e.g. by running:
-# info -n '(gettext)PO Files'
-# info -n '(gettext)Header Entry'
-# Some information specific to po-debconf are available at
-# /usr/share/doc/po-debconf/README-trans
-# or http://www.debian.org/intl/l10n/po-debconf/README-trans
-# Developers do not need to manually edit POT or PO files.
+# Translation of qpsmtpd debconf template to Swedish
+# Copyright (C) 2010 Martin Bagge <brother@bsnet.se>
+# This file is distributed under the same license as the XX package.
 #
-# Martin Ågren <martin.agren@gmail.com>, 2008.
+# Martin Ã…gren <martin.agren@gmail.com>, 2008.
+# Martin Bagge <brother@bsnet.se>, 2010
 msgid ""
 msgstr ""
 "Project-Id-Version: qpsmtpd_0.40-2_sv\n"
 "Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
 "POT-Creation-Date: 2009-12-14 01:40-0800\n"
-"PO-Revision-Date: 2008-07-29 18:47+0200\n"
-"Last-Translator: Martin Ågren <martin.agren@gmail.com>\n"
+"PO-Revision-Date: 2010-01-07 22:54+0100\n"
+"Last-Translator: Martin Bagge <brother@bsnet.se>\n"
 "Language-Team: Swedish <debian-l10n-swedish@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: sv\n"
-"X-Poedit-Country: sv\n"
-"X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: Sweden\n"
 
 #. Type: boolean
 #. Description
@@ -39,8 +31,8 @@ msgid ""
 "Because most MTAs in Debian listen on one or all network interfaces by "
 "default, when first installed qpsmtpd cannot normally be started."
 msgstr ""
-"Eftersom de flesta MTA:er i Debian lyssnar på ett eller alla "
-"nätverksgränssnitt som standard kan qpsmtpd normalt inte starta när den är "
+"Eftersom de flesta MTA:er i Debian lyssnar pÃ¥ ett eller alla "
+"nÃ¤tverksgrÃ¤nssnitt som standard kan qpsmtpd normalt inte starta nÃ¤r den Ã¤r "
 "nyinstallerad."
 
 #. Type: boolean
@@ -54,11 +46,11 @@ msgid ""
 "common MTAs to work with qpsmtpd can be found after installation in /usr/"
 "share/doc/qpsmtpd/README.Debian."
 msgstr ""
-"Innan du aktiverar qpsmtpd måste du konfigurera din lokala MTA så den inte "
-"binder till SMTP TCP-porten på åtminstone ett nätverksgränssnitt. Det "
-"vanligaste sättet är att lämna din MTA att lyssna på loopback-gränssnittet "
-"(127.0.0.1) och qpsmtpd lyssnar på det externa gränssnittet. Instruktioner "
-"för att konfigurera vanliga MTA:er så de fungerar med qpsmtpd kan hittas "
+"Innan du aktiverar qpsmtpd mÃ¥ste du konfigurera din lokala MTA sÃ¥ den inte "
+"binder till SMTP TCP-porten pÃ¥ Ã¥tminstone ett nÃ¤tverksgrÃ¤nssnitt. Det "
+"vanligaste sÃ¤ttet Ã¤r att lÃ¤mna din MTA att lyssna pÃ¥ loopback-grÃ¤nssnittet "
+"(127.0.0.1) och qpsmtpd lyssnar pÃ¥ det externa grÃ¤nssnittet. Instruktioner "
+"fÃ¶r att konfigurera vanliga MTA:er sÃ¥ de fungerar med qpsmtpd kan hittas "
 "efter installationen i /usr/share/doc/qpsmtpd/README.Debian."
 
 #. Type: boolean
@@ -68,14 +60,14 @@ msgid ""
 "Once you have adjusted your MTA configuration, you can enable qpsmtpd by "
 "restarting this configuration, by running 'dpkg-reconfigure qpsmtpd'."
 msgstr ""
-"När du har justerat din MTA-konfiguration kan du aktivera qpsmtpd genom att "
-"starta om denna konfiguration genom att köra \"dpkg-reconfigure qpsmtpd\"."
+"NÃ¤r du har justerat din MTA-konfiguration kan du aktivera qpsmtpd genom att "
+"starta om denna konfiguration genom att kÃ¶ra \"dpkg-reconfigure qpsmtpd\"."
 
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:2001
 msgid "Qpsmtpd server type:"
-msgstr ""
+msgstr "Servertyp fÃ¶r Qpsmtpd:"
 
 #. Type: select
 #. Description
@@ -88,12 +80,19 @@ msgid ""
 "handle new connections, offering slightly better performance at the cost of "
 "more memory."
 msgstr ""
+"Qpsmtpd har stÃ¶d fÃ¶r tvÃ¥ typer av processmodeller fÃ¶r att hantera "
+"anslutningar. Modellen \"forkserver\" innebÃ¤r att en enda process skapar nya "
+"processer som hanterar inkommande anslutningr. Denna metod anvÃ¤nder mindre "
+"minne men resulterar i nÃ¥got lÃ¤gre hastighet fÃ¶r genomstrÃ¶mningen. Modellen "
+"\"prefork\" skapar en pool med vÃ¤ntande processer som hanterar inkommande "
+"processer, denna metod ger nÃ¥got snabbare genomstrÃ¶mningshastighet men "
+"kostar Ã¥ andra sidan minne."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:3001
 msgid "Addresses on which to listen for incoming SMTP connections:"
-msgstr "Adresser som ska lyssnas på efter inkommande SMTP-anslutningar:"
+msgstr "Adresser som ska lyssnas pÃ¥ efter inkommande SMTP-anslutningar:"
 
 #. Type: string
 #. Description
@@ -104,10 +103,10 @@ msgid ""
 "setting empty, qpsmtpd will listen on all interfaces available at startup "
 "time."
 msgstr ""
-"En eller flera av dina lokala IP-adresser, separerade med mellanslag, för "
-"vilka qpsmtpd bör lyssna på efter inkommande SMTP-anslutningar. Om du lämnar "
-"denna inställning blank kommer qpsmtpd att lyssna på alla nätverksgränssnitt "
-"som är tillgängliga vid uppstart."
+"En eller flera av dina lokala IP-adresser, separerade med mellanslag, fÃ¶r "
+"vilka qpsmtpd bÃ¶r lyssna pÃ¥ efter inkommande SMTP-anslutningar. Om du lÃ¤mnar "
+"denna instÃ¤llning blank kommer qpsmtpd att lyssna pÃ¥ alla nÃ¤tverksgrÃ¤nssnitt "
+"som Ã¤r tillgÃ¤ngliga vid uppstart."
 
 #. Type: string
 #. Description
@@ -117,9 +116,9 @@ msgid ""
 "local MTA, you may wish to have qpsmtpd listen on all external interfaces, "
 "while leaving your local MTA listening on the loopback device (127.0.0.1)."
 msgstr ""
-"Om du tänker använda qpsmtpd för spool-leveranser från fjärrvärdar mot en "
-"lokal MTA kanske du vill ha qpsmtpd att lyssna på alla externa gränssnitt "
-"och lämnar din lokala MTA att lyssna på loopback-enheten (127.0.0.1)."
+"Om du tÃ¤nker anvÃ¤nda qpsmtpd fÃ¶r spool-leveranser frÃ¥n fjÃ¤rrvÃ¤rdar mot en "
+"lokal MTA kanske du vill ha qpsmtpd att lyssna pÃ¥ alla externa grÃ¤nssnitt "
+"och lÃ¤mnar din lokala MTA att lyssna pÃ¥ loopback-enheten (127.0.0.1)."
 
 #. Type: string
 #. Description
@@ -129,12 +128,15 @@ msgid ""
 "the default port 25; do this by appending :<port> to the interface, as in "
 "\"127.0.0.1:2526\"."
 msgstr ""
+"FÃ¶r varje grÃ¤nssnitt kan du ange en port att lyssna pÃ¥ om du inte vill att "
+"standardporten 25 ska anvÃ¤ndas. Detta gÃ¶rs genom att lÃ¤gga till :<port> pÃ¥ "
+"grÃ¤nssnittet, exempelvis \"127.0.0.1:2526\"."
 
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:4001
 msgid "Queueing method for accepted mail:"
-msgstr "Kömetod för accepterad post:"
+msgstr "KÃ¶metod fÃ¶r accepterad post:"
 
 #. Type: select
 #. Description
@@ -144,9 +146,9 @@ msgid ""
 "you deliver your mail locally, choose the method corresponding to the "
 "installed MTA (the installer will try to pick the correct default.)"
 msgstr ""
-"Välj metoden för att köa post när den har levererats via SMTP.  Om du "
-"levererar din post lokalt, välj metoden som passar den installerade MTA:n "
-"(installeraren kommer som standard att försöka hitta den korrekta.)"
+"VÃ¤lj metoden fÃ¶r att kÃ¶a post nÃ¤r den har levererats via SMTP.  Om du "
+"levererar din post lokalt, vÃ¤lj metoden som passar den installerade MTA:n "
+"(installeraren kommer som standard att fÃ¶rsÃ¶ka hitta den korrekta.)"
 
 #. Type: select
 #. Description
@@ -156,9 +158,9 @@ msgid ""
 "MTA (local or remote).  You will then be prompted to enter a destination "
 "host."
 msgstr ""
-"Välj \"proxy\" om du vill att qpsmtpd ska fungera som en SMTP-proxy för en "
-"annan MTA (lokal eller fjärr).  Du kommer då att bli tillfrågad att välja en "
-"destinationsvärd."
+"VÃ¤lj \"proxy\" om du vill att qpsmtpd ska fungera som en SMTP-proxy fÃ¶r en "
+"annan MTA (lokal eller fjÃ¤rr).  Du kommer dÃ¥ att bli tillfrÃ¥gad att vÃ¤lja en "
+"destinationsvÃ¤rd."
 
 #. Type: select
 #. Description
@@ -167,8 +169,8 @@ msgid ""
 "Select \"maildir\" to have qpsmtpd deliver into a local maildir-format spool "
 "instead of queueing it for delivery (e.g. if you're setting up a spamtrap.)"
 msgstr ""
-"Välj \"maildir\" för att qpsmtpd ska leverera till en lokal spool i maildir-"
-"format istället för att köa de för leverans (exempelvis om du satt upp ett "
+"VÃ¤lj \"maildir\" fÃ¶r att qpsmtpd ska leverera till en lokal spool i maildir-"
+"format istÃ¤llet fÃ¶r att kÃ¶a de fÃ¶r leverans (exempelvis om du satt upp ett "
 "spamfilter.)"
 
 #. Type: select
@@ -178,14 +180,14 @@ msgid ""
 "If you select \"none,\" no queueing will be done at all, unless you manually "
 "configure it yourself by editing /etc/qpsmtpd/plugins."
 msgstr ""
-"Om du väljer \"none\" kommer ingen kö att hanteras alls om du inte manuellt "
-"konfigurerat den själv genom att redigera /etc/qpsmtpd/plugins."
+"Om du vÃ¤ljer \"none\" kommer ingen kÃ¶ att hanteras alls om du inte manuellt "
+"konfigurerat den sjÃ¤lv genom att redigera /etc/qpsmtpd/plugins."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:5001
 msgid "Destination host/port for SMTP proxy delivery:"
-msgstr "Destinationsvärd/-port för SMTP-proxyleveranser:"
+msgstr "DestinationsvÃ¤rd/-port fÃ¶r SMTP-proxyleveranser:"
 
 #. Type: string
 #. Description
@@ -195,15 +197,15 @@ msgid ""
 "or IP address of that host here.  You can optionally add a port number after "
 "a colon, such as \"localhost:25\"."
 msgstr ""
-"För att qpsmtpd ska fungera som en SMTP-proxy för en annan värd måste du "
-"ange värdnamnet eller IP-adressen för den värden här.  Du kan valfritt ange "
-"ett portnummer efter ett kolon, såsom \"localhost:25\"."
+"FÃ¶r att qpsmtpd ska fungera som en SMTP-proxy fÃ¶r en annan vÃ¤rd mÃ¥ste du "
+"ange vÃ¤rdnamnet eller IP-adressen fÃ¶r den vÃ¤rden hÃ¤r.  Du kan valfritt ange "
+"ett portnummer efter ett kolon, sÃ¥som \"localhost:25\"."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:6001
 msgid "Destination Maildir for maildir-type delivery:"
-msgstr "Destinationskatalog för leveranser av maildir-typ:"
+msgstr "Destinationskatalog fÃ¶r leveranser av maildir-typ:"
 
 #. Type: string
 #. Description
@@ -213,15 +215,15 @@ msgid ""
 "enter a location for that maildir.  A maildir will be created in that "
 "location if it does not exist already."
 msgstr ""
-"För att qpsmtpd ska leverera mottagen post till en lokal kö i maildir-"
-"format, välj en katalog för detta maildir. Ett maildir kommer att skapas i "
+"FÃ¶r att qpsmtpd ska leverera mottagen post till en lokal kÃ¶ i maildir-"
+"format, vÃ¤lj en katalog fÃ¶r detta maildir. Ett maildir kommer att skapas i "
 "katalogen om det inte redan finns."
 
 #. Type: boolean
 #. Description
 #: ../qpsmtpd.templates:7001
 msgid "Proceed without a queueing plugin selected?"
-msgstr "Fortsätt utan ett valt insticksprogram för köhantering?"
+msgstr "FortsÃ¤tt utan ett valt insticksprogram fÃ¶r kÃ¶hantering?"
 
 #. Type: boolean
 #. Description
@@ -234,12 +236,12 @@ msgid ""
 "potential cost of wasted bandwidth and eventual bouncing of possibly "
 "legitimate mail."
 msgstr ""
-"Genom att välja \"none\" som ett insticksprogram för köhantering har du "
-"stängt av lokal köhantering av inkommande post. Detta kommer att förhindra "
-"att post blir köad av qpsmtpd tills du manuellt konfigurerat en kömetod. "
-"Alla värdar som försöker att leverera post till dig kommer att ta emot 4xx-"
-"felmeddelanden till dess, med risk för förslösad bandbredd och eventuella "
-"studsar av möjligen riktig post."
+"Genom att vÃ¤lja \"none\" som ett insticksprogram fÃ¶r kÃ¶hantering har du "
+"stÃ¤ngt av lokal kÃ¶hantering av inkommande post. Detta kommer att fÃ¶rhindra "
+"att post blir kÃ¶ad av qpsmtpd tills du manuellt konfigurerat en kÃ¶metod. "
+"Alla vÃ¤rdar som fÃ¶rsÃ¶ker att leverera post till dig kommer att ta emot 4xx-"
+"felmeddelanden till dess, med risk fÃ¶r fÃ¶rslÃ¶sad bandbredd och eventuella "
+"studsar av mÃ¶jligen riktig post."
 
 #. Type: boolean
 #. Description
@@ -251,17 +253,17 @@ msgid ""
 "SMTP proxy method instead, configuring it to proxy into your MTA on a "
 "suitable local address/port."
 msgstr ""
-"Om du vill konfigurera köhantering manuellt, kan du redigera /etc/qpsmtpd/"
-"plugins och välja en av de kömetoder som listas där.  Om du inte ser din "
-"installerade MTA i listan och inte är säker vad du ska göra, välj \"Avbryt\" "
-"här och välj metoden SMTP-proxy istället, för att sedan konfigurera den till "
-"att använda en proxy mot din MTA på en passande lokal address/port."
+"Om du vill konfigurera kÃ¶hantering manuellt, kan du redigera /etc/qpsmtpd/"
+"plugins och vÃ¤lja en av de kÃ¶metoder som listas dÃ¤r.  Om du inte ser din "
+"installerade MTA i listan och inte Ã¤r sÃ¤ker vad du ska gÃ¶ra, vÃ¤lj \"Avbryt\" "
+"hÃ¤r och vÃ¤lj metoden SMTP-proxy istÃ¤llet, fÃ¶r att sedan konfigurera den till "
+"att anvÃ¤nda en proxy mot din MTA pÃ¥ en passande lokal address/port."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:8001
 msgid "Destination domain(s) to accept mail for (blank for none):"
-msgstr "Destinationsdomän(er) att acceptera post för (blank för ingen):"
+msgstr "DestinationsdomÃ¤n(er) att acceptera post fÃ¶r (blank fÃ¶r ingen):"
 
 #. Type: string
 #. Description
@@ -275,13 +277,13 @@ msgid ""
 "as used for that MTA (the installer will attempt to extract that setting as "
 "a default.)"
 msgstr ""
-"Ange en lista av domännamn för vilka qpsmtpd ska acceptera post för, "
-"separera med mellanslag. Denna lista bör inkludera alla värdnamn eller "
-"domännamn för vilka du tänker acceptera lokala leveranser och även de "
-"mottagardomäner för vilka du tänker fungera som ett relä.  Om du tänker rent "
-"allmänt att spool-hantera mottagen post mot en lokal MTA bör denna lista "
-"vara samma som används för den MTA:n (installeraren kommer att plocka ut den "
-"inställningen som standard.)"
+"Ange en lista av domÃ¤nnamn fÃ¶r vilka qpsmtpd ska acceptera post fÃ¶r, "
+"separera med mellanslag. Denna lista bÃ¶r inkludera alla vÃ¤rdnamn eller "
+"domÃ¤nnamn fÃ¶r vilka du tÃ¤nker acceptera lokala leveranser och Ã¤ven de "
+"mottagardomÃ¤ner fÃ¶r vilka du tÃ¤nker fungera som ett relÃ¤.  Om du tÃ¤nker rent "
+"allmÃ¤nt att spool-hantera mottagen post mot en lokal MTA bÃ¶r denna lista "
+"vara samma som anvÃ¤nds fÃ¶r den MTA:n (installeraren kommer att plocka ut den "
+"instÃ¤llningen som standard.)"
 
 #. Type: string
 #. Description
@@ -290,5 +292,5 @@ msgid ""
 "If you prefer to manage this list manually, leave the entry blank and edit "
 "the file /etc/qpsmtpd/rcpthosts."
 msgstr ""
-"Om du föredrar att hantera denna lista manuellt, lämna detta fält blankt och "
+"Om du fÃ¶redrar att hantera denna lista manuellt, lÃ¤mna detta fÃ¤lt blankt och "
 "redigera filen /etc/qpsmtpd/rcpthosts."

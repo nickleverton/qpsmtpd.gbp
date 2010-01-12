@@ -1,19 +1,12 @@
-#
-#    Translators, if you are not familiar with the PO format, gettext
-#    documentation is worth reading, especially sections dedicated to
-#    this format, e.g. by running:
-#         info -n '(gettext)PO Files'
-#         info -n '(gettext)Header Entry'
-#
-#    Some information specific to po-debconf are available at
-#            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
-#    Developers do not need to manually edit POT or PO files.
+# French translation of qpsmtp debconf templates
+# Copyright (C) 2009 Debian French l10n Team <debian-l10n-french@lists.debian.org>
+# This file is distributed under the same license as the qpsmtp package.
+# Translator:
+# Steve Petruzzello <dlist@bluewin.ch>
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: qpsmtpd_0.32-3\n"
+"Project-Id-Version: qpsmtpd_0.83-1\n"
 "Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
 "POT-Creation-Date: 2009-12-14 01:40-0800\n"
 "PO-Revision-Date: 2006-07-19 12:33+0100\n"
@@ -22,8 +15,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: French\n"
-"X-Poedit-SourceCharset: iso-8859-1\n"
 
 #. Type: boolean
 #. Description
@@ -76,7 +67,7 @@ msgstr ""
 #. Description
 #: ../qpsmtpd.templates:2001
 msgid "Qpsmtpd server type:"
-msgstr ""
+msgstr "Type de serveur qpsmtpd :"
 
 #. Type: select
 #. Description
@@ -89,6 +80,13 @@ msgid ""
 "handle new connections, offering slightly better performance at the cost of "
 "more memory."
 msgstr ""
+"Le démon qsmtpd propose deux méthodes différentes de gestion des connexions. "
+"Avec la méthode « forkserver », un seul processus est actif en permanence et "
+"de nouveaux processus sont créés pour gérer les connexions entrantes. Cette "
+"méthode utilise moins de mémoire et réduit légèrement la charge du serveur. "
+"La méthode « prefork » garde plusieurs processus inactifs disponibles pour "
+"gérer les nouvelles connexions, offrant de meilleures performances au prix "
+"de davantage de mémoire utilisée."
 
 #. Type: string
 #. Description
@@ -131,6 +129,8 @@ msgid ""
 "the default port 25; do this by appending :<port> to the interface, as in "
 "\"127.0.0.1:2526\"."
 msgstr ""
+"Pour chaque interface, le port d'écoute (25 par défaut) peut être modifié en "
+"ajoutant :<port> au nom de l'interface. Exemple : « 127.0.0.1:2526 »."
 
 #. Type: select
 #. Description
@@ -267,7 +267,7 @@ msgstr ""
 #: ../qpsmtpd.templates:8001
 msgid "Destination domain(s) to accept mail for (blank for none):"
 msgstr ""
-"Veuillez choisir un ou plusieurs domaines de destination qui acceptant le "
+"Veuillez choisir un ou plusieurs domaines de destination qui acceptent le "
 "courrier. Laissez vide pour aucun."
 
 #. Type: string

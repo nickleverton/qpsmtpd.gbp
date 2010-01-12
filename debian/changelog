@@ -1,3 +1,15 @@
+qpsmtpd (0.83-2) unstable; urgency=low
+
+  * Update French debconf translation, thanks to Steve Petruzzello
+    (Closes: #564838)
+  * Update Russian debconf translation, thanks to Yuri Kozlov (Closes:
+    #563643)
+  * Update German debconf translation, thanks to Helge Kreutzmann
+    (Closes: #562978)
+  * Patch in a whatis section on Qpsmtpd.pm and Postfix.pm's POD
+
+ -- Devin Carraway <devin@debian.org>  Tue, 12 Jan 2010 00:25:43 -0800
+
 qpsmtpd (0.83-1) unstable; urgency=low
 
   * New upstream release.
