@@ -2,8 +2,8 @@
 
 ### BEGIN INIT INFO
 # Provides: qpsmtpd
-# Required-Start: $local_fs $remote_fs $network
-# Should-Start: $syslog $mail-transport-agent $clamav-daemon $spamassassin
+# Required-Start: $local_fs $remote_fs $network $named
+# Should-Start: $syslog $mail-transport-agent clamav-daemon spamassassin
 # Required-Stop: $local_fs $remote_fs $syslog
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6

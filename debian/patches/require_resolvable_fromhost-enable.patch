@@ -1,0 +1,17 @@
+Description: enable require_resolvable_fromhost by default when loaded
+Author: Devin Carraway <devin@debian.org>
+Forwarded: no
+Last-Update: 2006-07-04
+
+Index: qpsmtpd-0.84/plugins/require_resolvable_fromhost
+===================================================================
+--- qpsmtpd-0.84.orig/plugins/require_resolvable_fromhost	2010-04-08 00:51:07.000000000 -0700
++++ qpsmtpd-0.84/plugins/require_resolvable_fromhost	2010-04-08 00:54:42.000000000 -0700
+@@ -22,7 +22,6 @@
+   }
+ 
+   if ($sender ne "<>" 
+-      and $self->qp->config("require_resolvable_fromhost")
+       and !$self->check_dns($sender->host)) {
+     if ($sender->host) {
+ 	  $transaction->notes('temp_resolver_failed', $sender->host);

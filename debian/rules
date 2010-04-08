@@ -3,15 +3,13 @@
 
 PERL=perl
 
-include /usr/share/dpatch/dpatch.make
-
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
 	[ ! -f "Makefile" ] || $(MAKE) realclean
 	dh_clean
 
-configure: patch
+configure:
 	dh_testdir
 	$(PERL) Makefile.PL INSTALLDIRS=vendor
 
@@ -24,7 +22,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) install PREFIX=$(CURDIR)/debian/qpsmtpd/usr
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/qpsmtpd
 	# Comment out this line to omit the usual deletion of the qpsmtpd
 	# tcpserver-based toplevel script.  The standard install uses
 	# qpsmtpd-forkserver to avoid a non-free dependency on tcpserver.

@@ -1,3 +1,14 @@
+qpsmtpd (0.84-1) unstable; urgency=low
+
+  * New upstream release.
+  * Standards-Version 3.8.4
+  * Transition to dpkg-source 3.0 (quilt) format
+  * Remove whatis patch, accepted upstream
+  * Fix non-virtual facilities declared virtual in init.d (Closes: #574557)
+  * Update Swedish debconf translation; thanks to Martin Bagge (Closes: #564131)
+
+ -- Devin Carraway <devin@debian.org>  Wed, 07 Apr 2010 23:41:56 -0700
+
 qpsmtpd (0.83-2) unstable; urgency=low
 
   * Update French debconf translation, thanks to Steve Petruzzello
