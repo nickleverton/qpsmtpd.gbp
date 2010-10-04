@@ -1,3 +1,11 @@
+qpsmtpd (0.84-2) unstable; urgency=low
+
+  * Update Portuguese debconf translation; thanks to Traduz (Closes:
+    #579809)
+  * Standards-version 3.9.1, no changes needed
+
+ -- Devin Carraway <devin@debian.org>  Mon, 04 Oct 2010 01:20:03 -0700
+
 qpsmtpd (0.84-1) unstable; urgency=low
 
   * New upstream release.
