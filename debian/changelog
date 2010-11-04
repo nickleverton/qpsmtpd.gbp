@@ -1,3 +1,10 @@
+qpsmtpd (0.84-4) unstable; urgency=low
+
+  * Update Spanish translation; thanks to Francisco Cuadrado (Closes:
+    #600507)
+
+ -- Devin Carraway <devin@debian.org>  Thu, 04 Nov 2010 01:20:48 -0700
+
 qpsmtpd (0.84-3) unstable; urgency=low
 
   * Update Czech debconf translation; thanks to Miroslav Kure (Closes:
