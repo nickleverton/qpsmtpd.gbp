@@ -1,1 +1,2 @@
 require_resolvable_fromhost-enable.patch
+spf_plugin-upstream-02912602842.patch

@@ -1,3 +1,14 @@
+qpsmtpd (0.84-5) unstable; urgency=medium
+
+  * Add spf_plugin-upstream-02912602842.patch containing updated
+    sender_permitted_from plugin from upstream.  Replaces a dependency
+    on RC-buggy libmail-spf-query-perl with libmail-spf-perl.  (Closes:
+    #607472)
+  * Fix typo in package description (Closes: #607127)
+  * Elevated urgency for RC bug fix
+
+ -- Devin Carraway <devin@debian.org>  Thu, 23 Dec 2010 02:15:27 -0800
+
 qpsmtpd (0.84-4) unstable; urgency=low
 
   * Update Spanish translation; thanks to Francisco Cuadrado (Closes:
