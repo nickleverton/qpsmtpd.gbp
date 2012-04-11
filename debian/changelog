@@ -1,3 +1,11 @@
+qpsmtpd (0.84-6) unstable; urgency=low
+
+  * Add Italian translation; thanks to Beatrice Torracca <beatricet@libero.it>
+    (Closes: #668169)
+  * Standards-version 3.9.3, debian/rules updates
+
+ -- Devin Carraway <devin@debian.org>  Wed, 11 Apr 2012 01:43:28 -0800
+
 qpsmtpd (0.84-5) unstable; urgency=medium
 
   * Add spf_plugin-upstream-02912602842.patch containing updated
