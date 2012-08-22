@@ -1,10 +1,15 @@
+qpsmtpd (0.84-7) unstable; urgency=low
+
+  * Add Danish translation; thanks to Joe Dalton <joedalton2@yahoo.dk>
+    (Closes: #685412)
+
+ -- Devin Carraway <devin@debian.org>  Wed, 22 Aug 2012 01:04:09 -0700
+
 qpsmtpd (0.84-6) unstable; urgency=low
 
   * Add Italian translation; thanks to Beatrice Torracca <beatricet@libero.it>
-    (Closes: #668169)
-  * Standards-version 3.9.3, debian/rules updates
 
- -- Devin Carraway <devin@debian.org>  Wed, 11 Apr 2012 01:43:28 -0800
+ -- Devin Carraway <devin@debian.org>  Wed, 11 Apr 2012 01:43:00 -0800
 
 qpsmtpd (0.84-5) unstable; urgency=medium
 

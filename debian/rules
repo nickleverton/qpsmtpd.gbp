@@ -8,19 +8,14 @@ clean:
 	dh_testroot
 	[ ! -f "Makefile" ] || $(MAKE) realclean
 	dh_clean
-	rm -f build-stamp
 
 configure:
 	dh_testdir
 	$(PERL) Makefile.PL INSTALLDIRS=vendor
 
-build: build-arch build-indep
-build-arch: build-stamp
-build-indep: build-stamp
-build-stamp: configure
+build: configure
 	dh_testdir
 	$(MAKE)
-	touch build-stamp
 
 install: build
 	dh_testdir
@@ -59,8 +54,6 @@ install: build
 binary-arch: build install
 # nothing arch-dependent
 
-
-
 binary-indep: build install
 	dh_testdir
 	dh_testroot
@@ -86,6 +79,5 @@ binary-indep: build install
 
 binary: binary-indep binary-arch
 .PHONY: clean build binary-indep binary-arch binary
-
 
 # vi:set noexpandtab:
