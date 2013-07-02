@@ -1,0 +1,65 @@
+Date: Tue, 13 Nov 2012 20:33:28 +0100                                           
+From: Michael Holzt <kju@fqdn.org>                                              
+To: qpsmtpd@perl.org                                                            
+Subject: IPv6 code warnings (pack_sockaddr_in6 redefined etc)                   
+                                                                                
+[-- Attachment #1 --]                                                           
+[-- Type: text/plain, Encoding: 7bit, Size: 0.5K --]                            
+                                                                                
+The current code brings up warnings like                                        
+                                                                                
+  Subroutine main::pack_sockaddr_in6 redefined at                               
+    /usr/share/perl/5.14/Exporter.pm line 67.                                   
+    at /usr/bin/qpsmtpd-prefork line 38                                         
+                                                                                
+when IPv6 is available;                                                         
+                                                                                
+This is fixed by the attached patch. There is actually no need to import        
+anything from Socket6 in qpsmtpd-forkserver and qpsmtpd-prefork because         
+nothing is used. And in TcpServer.pm only inet_ntop is required from            
+Socket6.                                                                        
+                                                                                
+                                                                                
+Gruss                                                                           
+Michael                      
+---
+diff -Naur qpsmtpd-0.84.old/lib/Qpsmtpd/TcpServer.pm qpsmtpd-0.84/lib/Qpsmtpd/TcpServer.pm
+--- qpsmtpd-0.84.old/lib/Qpsmtpd/TcpServer.pm	2010-02-14 06:23:02.000000000 +0100
++++ qpsmtpd-0.84/lib/Qpsmtpd/TcpServer.pm	2012-11-13 20:30:13.000000000 +0100
+@@ -14,7 +14,7 @@
+     # INET6 prior to 2.01 will not work; sorry.
+     eval {require IO::Socket::INET6; IO::Socket::INET6->VERSION("2.00");}
+     ) {
+-    import Socket6;
++    Socket6->import(qw(inet_ntop));
+     $has_ipv6=1;
+ }
+ else {
+diff -Naur qpsmtpd-0.84.old/qpsmtpd-forkserver qpsmtpd-0.84/qpsmtpd-forkserver
+--- qpsmtpd-0.84.old/qpsmtpd-forkserver	2010-04-08 07:29:52.000000000 +0200
++++ qpsmtpd-0.84/qpsmtpd-forkserver	2012-11-13 20:28:56.000000000 +0100
+@@ -20,10 +20,6 @@
+ 
+ my $has_ipv6 = Qpsmtpd::TcpServer::has_ipv6;
+ 
+-if ($has_ipv6) {
+-  eval 'use Socket6';
+-}
+-
+ # Configuration
+ my $MAXCONN   = 15;                  # max simultaneous connections
+ my @PORT;                            # port number(s)
+diff -Naur qpsmtpd-0.84.old/qpsmtpd-prefork qpsmtpd-0.84/qpsmtpd-prefork
+--- qpsmtpd-0.84.old/qpsmtpd-prefork	2010-02-13 06:30:12.000000000 +0100
++++ qpsmtpd-0.84/qpsmtpd-prefork	2012-11-13 20:28:50.000000000 +0100
+@@ -31,10 +31,6 @@
+ 
+ my $has_ipv6 = Qpsmtpd::TcpServer::has_ipv6;
+ 
+-if ($has_ipv6) {
+-  use Socket6;
+-}
+-
+ #use Time::HiRes qw(gettimeofday tv_interval);
+ 
+ #get available signals

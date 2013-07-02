@@ -7,8 +7,6 @@ clean:
 	dh_testdir
 	dh_testroot
 	[ ! -f "Makefile" ] || $(MAKE) realclean
-	dh_clean
-	rm -f build-stamp
 
 configure:
 	dh_testdir
@@ -19,13 +17,12 @@ build-arch: build-stamp
 build-indep: build-stamp
 build-stamp: configure
 	dh_testdir
+	dh_prep
 	$(MAKE)
-	touch build-stamp
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
 	dh_installdirs
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/qpsmtpd
 	# Comment out this line to omit the usual deletion of the qpsmtpd
@@ -59,8 +56,6 @@ install: build
 binary-arch: build install
 # nothing arch-dependent
 
-
-
 binary-indep: build install
 	dh_testdir
 	dh_testroot
@@ -86,6 +81,5 @@ binary-indep: build install
 
 binary: binary-indep binary-arch
 .PHONY: clean build binary-indep binary-arch binary
-
 
 # vi:set noexpandtab:

@@ -1,3 +1,10 @@
+qpsmtpd (0.84-10) unstable; urgency=low
+
+  * Apply patch to silence IPv6-related warnings (Closes: #693179)
+  * Standards-version 3.9.4
+
+ -- Devin Carraway <devin@debian.org>  Mon, 01 Jul 2013 18:24:33 -0700
+
 qpsmtpd (0.84-9) unstable; urgency=low
 
   * Apply patch to prevent hang in SPF plugin under IPv6 (Closes:
