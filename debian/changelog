@@ -1,3 +1,10 @@
+qpsmtpd (0.84-11) unstable; urgency=low
+
+  * Add Japanese debconf translation; thanks to victory (Closes:
+    #718918)
+
+ -- Devin Carraway <devin@debian.org>  Tue, 13 Aug 2013 00:01:15 -0700
+
 qpsmtpd (0.84-10) unstable; urgency=low
 
   * Apply patch to silence IPv6-related warnings (Closes: #693179)
