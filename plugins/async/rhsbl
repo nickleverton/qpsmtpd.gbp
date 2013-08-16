@@ -3,7 +3,7 @@
 use Qpsmtpd::Plugin::Async::DNSBLBase;
 
 sub init {
-    my $self = shift;
+    my $self  = shift;
     my $class = ref $self;
 
     no strict 'refs';
@@ -65,8 +65,6 @@ sub hook_rcpt {
     return (DENY, "Mail from $host rejected because it $note") if $note;
     return DECLINED;
 }
-
-1;
 
 =head1 NAME
 

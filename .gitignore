@@ -13,7 +13,15 @@ packaging/rpm/build/
 
 *~
 *.bak
+denysoft_greylist.dbm
+denysoft_greylist.dbm.lock
+greylist.dbm
+greylist.dbm.lock
 
 /cover_db/
+.last_cover_stats
 
 *.tar.gz
+
+MANIFEST.bak
+nytprof.out

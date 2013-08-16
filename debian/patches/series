@@ -1,5 +1,0 @@
-require_resolvable_fromhost-enable.patch
-spf_plugin-upstream-02912602842.patch
-spf_plugin-bug693181.patch
-ipv6_warnings-bug693179.patch
-netdns_header_compat-bug795836.patch
