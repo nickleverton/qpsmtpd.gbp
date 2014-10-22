@@ -1,6 +1,10 @@
-Name:           @PACKAGE@
-Version:        @VERSION@
-Release:        @RELEASE@
+%{!?_package:%define _package @PACKAGE@}
+%{!?_version:%define _version @VERSION@}
+%{!?_release:%define _release @RELEASE@}
+
+Name:           %{_package}
+Version:        %{_version}
+Release:        %{_release}
 
 Summary: qpsmtpd + qpsmtpd-apache + qpsmtpd-async
 License: MIT
@@ -8,18 +12,18 @@ Group: System Environment/Daemons
 URL: http://smtpd.develooper.com/
 BuildRoot: %{_builddir}/%{name}-%{version}-%{release}-root
 BuildRequires: perl >= 0:5.00503
-BuildArch: noarch
+BuildRequires: perl(ExtUtils::MakeMaker)
+BuildArchitectures: noarch
 Requires: perl(Mail::Header), perl(Net::DNS) perl(Net::IP) perl(IPC::Shareable)
 Requires(pre): coreutils, shadow-utils, perl
 
 Source0: %{name}-%{version}-%{release}.tar.gz
 Source1: qpsmtpd-forkserver.rc
 Source2: qpsmtpd-forkserver.sysconfig
-Source3: qpsmtpd-plugin-file_connection
-Source4: qpsmtpd-xinetd
-Source5: in.qpsmtpd
-Source6: qpsmtpd.conf
-Source7: README.selinux
+Source3: qpsmtpd-xinetd
+Source4: in.qpsmtpd
+Source5: qpsmtpd.conf
+Source6: README.selinux
 
 %description
 qpsmtpd is a flexible smtpd daemon written in Perl. Apart from the core
@@ -38,6 +42,11 @@ Group: System Environment/Daemons
 Summary: qpsmtpd using async I/O in a single process
 Group: System Environment/Daemons
 
+%package xinetd
+Summary: xinetd support for qpsmtpd
+Group: System Environment/Daemons
+Requires: xinetd
+
 %description apache
 
 This module implements a mod_perl/apache 2.0 connection handler
@@ -48,11 +57,14 @@ This package contains the Qpsmtpd::PollServer module, which allows
 qpsmtd to handle many connections in a single process and the 
 qpsmpd-async which uses it.
 
+%description xinetd
+This package contains the xinetd startup files for qpsmptd.
+
 %prep
 %setup -q -n %{name}-%{version}-%{release}
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL PREFIX=%{_prefix}
+CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL INSTALLSITELIB=%{_prefix}/lib/perl5/site_perl
 make
 
 %clean
@@ -69,9 +81,9 @@ then
         make DESTDIR=$RPM_BUILD_ROOT install
 
 else
-        make PREFIX=$RPM_BUILD_ROOT%{_prefix}
+        make PREFIX=$RPM_BUILD_ROOT/usr
         find blib/lib -name '*.pm.*' -exec rm -f {} \;
-        make PREFIX=$RPM_BUILD_ROOT%{_prefix} install
+        make PREFIX=$RPM_BUILD_ROOT/usr install
 fi
 mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/%{name}
 rm -f ${RPM_BUILD_ROOT}%{_datadir}/%{name}/plugins/*.*
@@ -81,22 +93,20 @@ rm -f ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}/*.*
 cp -r config.sample/* ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}/
 echo %{_datadir}/%{name}/plugins > ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}/plugin_dirs
 echo %{_localstatedir}/spool/qpsmtpd > ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}/spool_dir
-echo logging/file_connection loglevel LOGINFO %{_localstatedir}/log/qpsmtpd/%Y-%m-%d > ${RPM_BUILD_ROOT}%{_sysconfdir}/%{name}/logging
 mkdir -p ${RPM_BUILD_ROOT}%{_initrddir}
 cp %{SOURCE1} ${RPM_BUILD_ROOT}%{_initrddir}/qpsmtpd-forkserver
 mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/sysconfig
 cp %{SOURCE2} ${RPM_BUILD_ROOT}%{_sysconfdir}/sysconfig/qpsmtpd-forkserver
-cp %{SOURCE3} ${RPM_BUILD_ROOT}%{_datadir}/%{name}/plugins/logging/file_connection
 mkdir -p ${RPM_BUILD_ROOT}%{_localstatedir}/spool/qpsmtpd
 mkdir -p ${RPM_BUILD_ROOT}%{_localstatedir}/log/qpsmtpd
 mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/xinetd.d
-cp %{SOURCE4} ${RPM_BUILD_ROOT}%{_sysconfdir}/xinetd.d/smtp
+cp %{SOURCE3} ${RPM_BUILD_ROOT}%{_sysconfdir}/xinetd.d/smtp
 mkdir -p ${RPM_BUILD_ROOT}%{_sbindir}
-cp %{SOURCE5} ${RPM_BUILD_ROOT}%{_sbindir}/in.smtp
+cp %{SOURCE4} ${RPM_BUILD_ROOT}%{_sbindir}/in.qpsmtpd
 mkdir -p ${RPM_BUILD_ROOT}%{_sysconfdir}/httpd/conf.d
-cp %{SOURCE6} ${RPM_BUILD_ROOT}%{_sysconfdir}/httpd/conf.d
+cp %{SOURCE5} ${RPM_BUILD_ROOT}%{_sysconfdir}/httpd/conf.d
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-apache-%{version}
-cp %{SOURCE7} $RPM_BUILD_ROOT%{_docdir}/%{name}-apache-%{version}
+cp %{SOURCE6} $RPM_BUILD_ROOT%{_docdir}/%{name}-apache-%{version}
 
 [ -x /usr/lib/rpm/brp-compress ] && /usr/lib/rpm/brp-compress
 
@@ -106,11 +116,34 @@ find ${RPM_BUILD_ROOT}%{_prefix} -type f -print | \
         grep -v [Aa]sync                | \
         grep -v packaging               | \
         grep -v README.selinux          | \
+        grep -v in\\.qpsmtpd            | \
         grep -v /Apache                 | \
         grep -v /Danga                  | \
-        grep -v Qpsmtpd/ConfigServer.pm | \
+        grep -v ConfigServer            | \
         grep -v Qpsmtpd/PollServer.pm   > %{name}-%{version}-%{release}-filelist
 if [ "$(cat %{name}-%{version}-%{release}-filelist)X" = "X" ] ; then
+    echo "ERROR: EMPTY FILE LIST"
+    exit -1
+fi
+
+find ${RPM_BUILD_ROOT}%{_prefix} -type f -print | \
+	sed "s@^$RPM_BUILD_ROOT@@g"     | \
+	grep -v packaging		| \
+	grep -v README.selinux		| \
+	grep -v /Apache                 | cat - %{name}-%{version}-%{release}-filelist | sort | uniq -u > %{name}-%{version}-%{release}-async-filelist
+if [ "$(cat %{name}-%{version}-%{release}-async-filelist)X" = "X" ] ; then
+    echo "ERROR: EMPTY FILE LIST"
+    exit -1
+fi
+
+find ${RPM_BUILD_ROOT}%{_prefix} -type f -print | \
+	sed "s@^$RPM_BUILD_ROOT@@g"     | \
+	grep -v [Aa]sync		| \
+	grep -v packaging		| \
+	grep -v /Danga                  | \
+        grep -v ConfigServer            | \
+	grep -v Qpsmtpd/PollServer.pm   | cat - %{name}-%{version}-%{release}-filelist | sort | uniq -u > %{name}-%{version}-%{release}-apache-filelist
+if [ "$(cat %{name}-%{version}-%{release}-apache-filelist)X" = "X" ] ; then
     echo "ERROR: EMPTY FILE LIST"
     exit -1
 fi
@@ -120,28 +153,23 @@ fi
 %doc CREDITS Changes LICENSE README README.plugins STATUS
 %{_initrddir}/qpsmtpd-forkserver
 %config(noreplace) %{_sysconfdir}/qpsmtpd/*
-%config(noreplace) %{_sysconfdir}/xinetd.d/smtp
 %config(noreplace) %{_sysconfdir}/sysconfig/qpsmtpd-forkserver
 %attr(2750,qpsmtpd,clamav) %dir %{_localstatedir}/spool/qpsmtpd
 %attr(0750,smtpd,smtpd) %dir %{_localstatedir}/log/qpsmtpd
 
-%files apache
+%files apache -f %{name}-%{version}-%{release}-apache-filelist
 %defattr(-,root,root)
-%{_datadir}/perl5/Apache/Qpsmtpd.pm
-%{_mandir}/man3/Apache::Qpsmtpd.3pm.gz
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/*
 %doc %{_docdir}/%{name}-apache-%{version}/README.selinux
 
-%files async
+%files async -f %{name}-%{version}-%{release}-async-filelist
 %defattr(-,root,root)
-%{_bindir}/qpsmtpd-async
-%{_datadir}/perl5/Danga/Client.pm
-%{_datadir}/perl5/Danga/TimeoutSocket.pm
-%{_datadir}/perl5/Qpsmtpd/ConfigServer.pm
-%{_datadir}/perl5/Qpsmtpd/Plugin/Async/DNSBLBase.pm
-%{_datadir}/perl5/Qpsmtpd/PollServer.pm
-%{_mandir}/man1/qpsmtpd-async.1.gz
 %{_datadir}/%{name}/plugins/async/*
+
+%files xinetd
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/xinetd.d/smtp
+%{_sbindir}/in.qpsmtpd
 
 %pre
 if ! id smtpd >/dev/null 2>&1
@@ -157,8 +185,12 @@ then
 fi
 
 %changelog
-* Tue Oct 02 2012 <robin.bowes@yo61.com>
-- Fix up spec file to build directly from git repo
+* Fri Oct 14 2011 <richard.siddall@elirion.net> 0.84-1
+- Removed rpm/files/qpsmtpd-plugin-file_connection as there's a
+newer version in plugins/logging/file
+
+* Sat Feb 13 2010 <richard.siddall@elirion.net>
+- Split out xinetd files into separate RPM
 
 * Sun Jul 12 2009 <rpmbuild@robinbowes.com> 0.82-0.1
 - Update to latest release

@@ -6,7 +6,8 @@ PERL=perl
 clean:
 	dh_testdir
 	dh_testroot
-	[ ! -f "Makefile" ] || $(MAKE) realclean
+	dh_auto_clean
+	dh_clean
 
 configure:
 	dh_testdir
@@ -30,9 +31,8 @@ install: build
 	# qpsmtpd-forkserver to avoid a non-free dependency on tcpserver.
 	rm -f $(CURDIR)/debian/qpsmtpd/usr/bin/qpsmtpd
 	# Comment out this line to omit the usual deletion of qpsmtpd-async,
-	# which is included in the main qpsmtpd distribution but has not
-	# stabilized enough for mainstream use and introduces compatibility
-	# problems with some plugins.
+	# which is included in the main qpsmtpd distribution as of 0.94 but
+	# is abandoned upstream and has since been removed from upstream git.
 	rm -f $(CURDIR)/debian/qpsmtpd/usr/bin/qpsmtpd-async
 	# /var/spool/qpsmtpd will be chown'ed by postinst
 	install -m 700 -d $(CURDIR)/debian/qpsmtpd/var/spool/qpsmtpd
@@ -50,6 +50,10 @@ install: build
 	# install lintian overrides
 	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides
 	install -m 644 debian/qpsmtpd.lintian $(CURDIR)/debian/qpsmtpd/usr/share/lintian/overrides/qpsmtpd
+	# install documentation POD
+	install -m 755 -d $(CURDIR)/debian/qpsmtpd/usr/share/doc/qpsmtpd
+	cp -a $(CURDIR)/docs/* $(CURDIR)/debian/qpsmtpd/usr/share/doc/qpsmtpd
+	cp -a $(CURDIR)/UPGRADING.pod $(CURDIR)/debian/qpsmtpd/usr/share/doc/qpsmtpd
 	# remove pf2qp.pl, used to generate Constants.pm in upstream SVN
 	rm -f $(CURDIR)/debian/qpsmtpd/usr/share/perl5/Qpsmtpd/Postfix/pf2qp.pl
 

@@ -1,8 +1,15 @@
-qpsmtpd (0.84+503+g423c35a-1) experimental; urgency=low
+qpsmtpd (0.94-1) unstable; urgency=medium
 
-  * Snapshot build from upstream git
+  * New upstream release.  0.94 has a great many upstream changes, some of
+    which affect behavior.  See UPGRADING.pod for more details.
+  * pod2man-utf8.patch: Avoid a lintian warning for undeclared UTF8
+    encoding in pod2man-generated output
+  * Stop advertising sysvinit-style reload, and restart rather than reload in
+    logrotate conf (Closes: #764257)
+  * Patch import/syntactical errors in plugins/auth/auth_ldap_bind
+    (Closes: #706906)
 
- -- Devin Carraway <devin@debian.org>  Tue, 16 Aug 2013 00:29:01 -0700
+ -- Devin Carraway <devin@debian.org>  Tue, 21 Oct 2014 23:59:36 -0700
 
 qpsmtpd (0.84-11) unstable; urgency=low
 
