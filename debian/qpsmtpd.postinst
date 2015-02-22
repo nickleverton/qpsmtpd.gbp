@@ -159,20 +159,6 @@ setup_maildir_spool()
 	fi
 }
 
-upgrade_config_094pluginrenames()
-{
-  cp -a -f /etc/qpsmtpd/plugins /etc/qpsmtpd/plugins.pre-0.94
-  cat /etc/qpsmtpd/plugins.pre-0.94 |
-    sed 's/^check_earlytalker/earlytalker/' |
-    sed 's/^check_relay/relay/' |
-    sed 's/^check_spamhelo/helo/' |
-    sed 's/^check_badmailfrom/badmailfrom/' |
-    sed 's/^check_badrcptto/badrcptto/' |
-    sed 's/^check_loop/loop/' |
-    cat > /etc/qpsmtpd/plugins.new
-  mv /etc/qpsmtpd/plugins.new /etc/qpsmtpd/plugins
-}
-
 upgrade_config()
 {
   from_version="$1" ; shift
@@ -181,10 +167,11 @@ upgrade_config()
       chown qpsmtpd /var/log/qpsmtpd/qpsmtpd.log
     fi
   fi
-  if dpkg --compare-versions "$from_version" lt 0.94 ; then
+  if dpkg --compare-versions "$from_version" le 0.94-1 ; then
     # "check_" prefix was removed in upstream change
     # b1c2fa16b5fda84f361abf15764501fd11e84022
-    upgrade_config_094pluginrenames
+    db_input high qpsmtpd/pre094_checkplugin_warning || true
+    db_go
   fi
 }
 

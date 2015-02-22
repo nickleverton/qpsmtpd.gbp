@@ -1,3 +1,11 @@
+qpsmtpd (0.94-2) unstable; urgency=medium
+
+  * Ship backwards-compatibility wrappers for check_ plugins.  See
+    /usr/share/doc/qpsmtpd/README.check_plugins for migration
+    instructions.  (Closes: #767815)
+
+ -- Devin Carraway <devin@debian.org>  Sat, 21 Feb 2015 23:50:17 -0800
+
 qpsmtpd (0.94-1) unstable; urgency=medium
 
   * New upstream release.  0.94 has a great many upstream changes, some of

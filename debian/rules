@@ -63,7 +63,7 @@ binary-arch: build install
 binary-indep: build install
 	dh_testdir
 	dh_testroot
-	dh_installdocs
+	dh_installdocs $(CURDIR)/debian/README.check_plugins
 	dh_installman \
 		 $(CURDIR)/debian/qpsmtpd-forkserver.8 \
 		 $(CURDIR)/debian/qpsmtpd-prefork.8 
