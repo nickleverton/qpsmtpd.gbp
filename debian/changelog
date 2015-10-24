@@ -1,3 +1,11 @@
+qpsmtpd (0.84-11+deb8u1) stable; urgency=medium
+
+  * Patch for compatibility-breaker change in Net::DNS (Closes: #795836)
+  * Depend on libnet-dns-perl >= 0.81, since 0.66 from oldstable has the
+    opposite compatibility problem
+
+ -- Devin Carraway <devin@debian.org>  Sat, 24 Oct 2015 07:27:50 +0000
+
 qpsmtpd (0.84-11) unstable; urgency=low
 
   * Add Japanese debconf translation; thanks to victory (Closes:

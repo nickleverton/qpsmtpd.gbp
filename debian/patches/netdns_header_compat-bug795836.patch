@@ -1,0 +1,13 @@
+Index: qpsmtpd-0.84/qpsmtpd-forkserver
+===================================================================
+--- qpsmtpd-0.84.orig/qpsmtpd-forkserver	2015-10-24 05:35:24.000000000 +0000
++++ qpsmtpd-0.84/qpsmtpd-forkserver	2015-10-24 07:23:18.815328768 +0000
+@@ -281,7 +281,7 @@
+     # all children should have different seeds, to prevent conflicts
+     srand();
+     for (0 .. rand(65536)) {
+-	Net::DNS::Header::nextid();
++	Net::DNS::Header::id();
+     }
+   
+     close $_ for $select->handles;
