@@ -15,6 +15,7 @@ my @parameters = qw(
         relay_client
 );
 
+
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -37,10 +38,17 @@ sub start {
 
 sub clone {
   my $self = shift;
+  my %args = @_;
   my $new = $self->new();
   foreach my $f ( @parameters ) {
     $new->$f($self->$f()) if $self->$f();
   }
+  $new->{_notes} = $self->{_notes} if defined $self->{_notes};
+  # reset the old connection object like it's done at the end of a connection
+  # to prevent leaks (like prefork/tls problem with the old SSL file handle 
+  # still around)
+  $self->reset unless $args{no_reset}; 
+  # should we generate a new id here?
   return $new;
 }
 
@@ -106,6 +114,12 @@ sub notes {
   $self->{_notes}->{$key};
 }
 
+sub reset {
+   my $self = shift;
+   $self->{_notes} = undef;
+   $self = $self->new;
+}
+
 1;
 
 __END__
@@ -156,8 +170,6 @@ The remote IP address of the connecting host.
 
 The remote port.
 
-=head2 hello( )
-
 =head2 remote_info( )
 
 If your server does an ident lookup on the remote host, this is the
@@ -188,11 +200,24 @@ set after a successful return from those hooks.
 
 =head2 notes($key [, $value])
 
-Connection-wide notes, used for passing data between plugins.
+Get or set a note on the connection. This is a piece of data that you wish
+to attach to the connection and read somewhere else. For example you can
+use this to pass data between plugins.
 
-=head2 clone( )
+=head2 clone([%args])
 
-Returns a copy of the Qpsmtpd::Connection object.
+Returns a copy of the Qpsmtpd::Connection object. The optional args parameter
+may contain:
+
+=over 4
+
+=item no_reset (1|0) 
+
+If true, do not reset the original connection object, the author has to care
+about that: only the cloned connection object is reset at the end of the 
+connection
+
+=back
 
 =cut
 

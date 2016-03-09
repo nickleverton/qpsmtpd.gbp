@@ -37,7 +37,7 @@ sub new {
   my (%commands); @commands{@commands} = ('') x @commands;
   # this list of valid commands should probably be a method or a set of methods
   $self->{_commands} = \%commands;
-
+  $self->SUPER::_restart(%args) if $args{restart}; # calls Qpsmtpd::_restart()
   $self;
 }
 
@@ -145,7 +145,6 @@ sub connection {
   return $self->{_connection} || ($self->{_connection} = Qpsmtpd::Connection->new());
 }
 
-
 sub helo {
   my ($self, $line) = @_;
   my ($rc, @msg) = $self->run_hooks('helo_parse');
@@ -221,7 +220,7 @@ sub ehlo_respond {
                         : ();  
 
     # Check for possible AUTH mechanisms
-HOOK: foreach my $hook ( keys %{$self->{hooks}} ) {
+HOOK: foreach my $hook ( keys %{$self->hooks} ) {
         if ( $hook =~ m/^auth-?(.+)?$/ ) {
             if ( defined $1 ) {
                 $auth_mechanisms{uc($1)} = 1;
@@ -343,7 +342,7 @@ sub mail_pre_respond {
       $from = shift @$msg;
     }
 
-    $self->log(LOGALERT, "from email address : [$from]");
+    $self->log(LOGDEBUG, "from email address : [$from]");
     return $self->respond(501, "could not parse your mail from command") 
       unless $from =~ /^<.*>$/;
 
@@ -427,7 +426,7 @@ sub rcpt_pre_respond {
   if ($rc == OK) {
     $rcpt = shift @$msg;
   }
-  $self->log(LOGALERT, "to email address : [$rcpt]");
+  $self->log(LOGDEBUG, "to email address : [$rcpt]");
   return $self->respond(501, "could not parse recipient") 
     unless $rcpt =~ /^<.*>$/;
 
@@ -476,17 +475,50 @@ sub rcpt_respond {
 }
 
 sub help {
-  my $self = shift;
-  $self->respond(214, 
-          "This is qpsmtpd " . 
-          ($self->config('smtpgreeting') ? '' : $self->version),
-          "See http://smtpd.develooper.com/",
-          'To report bugs or send comments, mail to <ask@develooper.com>.');
+  my ($self, @args) = @_;
+  $self->run_hooks("help", @args);
+}
+
+sub help_respond {
+  my ($self, $rc, $msg, $args) = @_;
+
+  return 1 
+    if $rc == DONE;
+
+  if ($rc == DENY) {
+    $msg->[0] ||= "Syntax error, command not recognized";
+    $self->respond(500, @$msg);
+  }
+  else {
+    unless ($msg->[0]) {
+      @$msg = (
+        "This is qpsmtpd " . ($self->config('smtpgreeting') ? '' : $self->version),
+        "See http://smtpd.develooper.com/",
+        'To report bugs or send comments, mail to <ask@develooper.com>.');
+    }
+    $self->respond(214, @$msg);
+  }
+  return 1;
 }
 
 sub noop {
   my $self = shift;
+  $self->run_hooks("noop");
+}
+
+sub noop_respond {
+  my ($self, $rc, $msg, $args) = @_;
+  return 1 if $rc == DONE;
+
+  if ($rc == DENY || $rc == DENY_DISCONNECT) {
+    $msg->[0] ||= "Stop wasting my time."; # FIXME: better default message?
+    $self->respond(500, @$msg);
+    $self->disconnect if $rc == DENY_DISCONNECT;
+    return 1;
+  }
+
   $self->respond(250, "OK");
+  return 1;
 }
 
 sub vrfy {
@@ -632,11 +664,23 @@ sub data_respond {
 
         $buffer = "";
 
-        # FIXME - call plugins to work on just the header here; can
-        # save us buffering the mail content.
+        $self->transaction->header($header);
 
-	# Save the start of just the body itself	
-	$self->transaction->set_body_start();
+        # NOTE: This will not work properly under async.  A
+        # data_headers_end_respond needs to be created.
+        my ($rc, $msg) = $self->run_hooks('data_headers_end');
+        if ($rc == DENY_DISCONNECT) {
+          $self->respond(554, $msg || "Message denied");
+          $self->disconnect;
+          return 1;
+        } elsif ($rc == DENYSOFT_DISCONNECT) {
+          $self->respond(421, $msg || "Message denied temporarily");
+          $self->disconnect;
+          return 1;
+        }
+
+        # Save the start of just the body itself
+        $self->transaction->set_body_start();
 
       }
 
@@ -654,8 +698,6 @@ sub data_respond {
   }
 
   $self->log(LOGDEBUG, "max_size: $max_size / size: $size");
-
-  $self->transaction->header($header);
 
   my $smtp = $self->connection->hello eq "ehlo" ? "ESMTP" : "SMTP";
   my $esmtp = substr($smtp,0,1) eq "E";
@@ -719,18 +761,30 @@ sub data_post_respond {
   elsif ($rc == DENY) {
     $msg->[0] ||= "Message denied";
     $self->respond(552, @$msg);
+    # DATA is always the end of a "transaction"
+    return $self->reset_transaction;
   }
   elsif ($rc == DENYSOFT) {
     $msg->[0] ||= "Message denied temporarily";
     $self->respond(452, @$msg);
+    # DATA is always the end of a "transaction"
+    return $self->reset_transaction;
   } 
+  elsif ($rc == DENY_DISCONNECT) {
+    $msg->[0] ||= "Message denied";
+    $self->respond(552, @$msg);
+    $self->disconnect;
+    return 1;
+  }
+  elsif ($rc == DENYSOFT_DISCONNECT) {
+    $msg->[0] ||= "Message denied temporarily";
+    $self->respond(452, @$msg);
+    $self->disconnect;
+    return 1;
+  }
   else {
     $self->queue($self->transaction);
   }
-
-  # DATA is always the end of a "transaction"
-  return $self->reset_transaction;
-
 }
 
 sub getline {
@@ -765,6 +819,10 @@ sub queue_pre_respond {
 
 sub queue_respond {
   my ($self, $rc, $msg, $args) = @_;
+  
+  # reset transaction if we queued the mail
+  $self->reset_transaction;
+  
   if ($rc == DONE) {
     return 1;
   }

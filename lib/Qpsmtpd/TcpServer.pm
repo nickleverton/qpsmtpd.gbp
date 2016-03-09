@@ -54,7 +54,7 @@ sub start_connection {
     # if the local dns resolver doesn't filter it out we might get
     # ansi escape characters that could make a ps axw do "funny"
     # things. So to be safe, cut them out.  
-    $remote_host =~ tr/a-zA-Z\.\-0-9//cd;
+    $remote_host =~ tr/a-zA-Z\.\-0-9\[\]//cd;
 
     $first_0 = $0 unless $first_0;
     my $now = POSIX::strftime("%H:%M:%S %Y-%m-%d", localtime);
@@ -67,16 +67,17 @@ sub start_connection {
 }
 
 sub run {
-    my $self = shift;
+    my ($self, $client) = @_;
 
-    # should be somewhere in Qpsmtpd.pm and not here...
-    $self->load_plugins unless $self->{hooks};
+    # Set local client_socket to passed client object for testing socket state on writes
+    $self->{__client_socket} = $client;
+
+    $self->load_plugins;
 
     my $rc = $self->start_conversation;
     return if $rc != DONE;
 
     # this should really be the loop and read_input should just get one line; I think
-
     $self->read_input;
 }
 
@@ -104,6 +105,12 @@ sub read_input {
 sub respond {
   my ($self, $code, @messages) = @_;
   my $buf = '';
+
+  if ( !$self->check_socket() ) {
+    $self->log(LOGERROR, "Lost connection to client, cannot send response.");
+    return(0);
+  }
+
   while (my $msg = shift @messages) {
     my $line = $code . (@messages?"-":" ").$msg;
     $self->log(LOGINFO, $line);
@@ -118,6 +125,7 @@ sub disconnect {
   $self->log(LOGINFO,"click, disconnecting");
   $self->SUPER::disconnect(@_);
   $self->run_hooks("post-connection");
+  $self->connection->reset;
   exit;
 }
 
@@ -158,6 +166,14 @@ sub tcpenv {
     }
   }
   return ($TCPLOCALIP, $TCPREMOTEIP, $TCPREMOTEHOST || "Unknown");
+}
+
+sub check_socket() {
+  my $self = shift;
+
+  return 1 if ( $self->{__client_socket}->connected );
+ 
+  return 0;
 }
 
 1;

@@ -1,8 +1,8 @@
 #!/usr/bin/perl -Tw
-# Copyright (c) 2001 Ask Bjoern Hansen. See the LICENSE file for details.
+# Copyright (c) 2001-2009 Ask Bjoern Hansen. See the LICENSE file for details.
 # The "command dispatch" system is taken from colobus - http://trainedmonkey.com/colobus/
 #
-# For more information see http://develooper.com/code/qpsmtpd/
+# For more information see http://smtpd.develooper.com/
 #
 #
 
@@ -218,6 +218,13 @@ if ($PID_FILE) {
 $qpsmtpd->spool_dir;
 $qpsmtpd->size_threshold;
 
+$SIG{HUP} = sub {
+    $qpsmtpd = Qpsmtpd::TcpServer->new('restart' => 1);
+    $qpsmtpd->load_plugins;
+    $qpsmtpd->spool_dir;
+    $qpsmtpd->size_threshold;
+};
+
 while (1) {
   REAPER();
   my $running = scalar keys %childstatus;
@@ -300,7 +307,6 @@ while (1) {
     # dup to STDIN/STDOUT
     POSIX::dup2(fileno($client), 0);
     POSIX::dup2(fileno($client), 1);
-    close $client;
     
     $qpsmtpd->start_connection
       (
@@ -309,9 +315,11 @@ while (1) {
        remote_ip   => $ENV{TCPREMOTEIP},
        remote_port => $port,
       );
-    $qpsmtpd->run();
+    $qpsmtpd->run($client);
     
     $qpsmtpd->run_hooks("post-connection");
+    $qpsmtpd->connection->reset;
+    close $client;
     exit;                                   # child leaves
   }
 }

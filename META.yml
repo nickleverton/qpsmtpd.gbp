@@ -1,16 +1,25 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         qpsmtpd
-version:      0.40
-version_from: lib/Qpsmtpd.pm
-installdirs:  site
+--- #YAML:1.0
+name:               qpsmtpd
+version:            0.81
+abstract:           Flexible smtpd daemon written in Perl
+author:
+    - Ask Bjoern Hansen <ask@develooper.com>
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
 requires:
-    Data::Dumper:                  0
-    File::Temp:                    0
-    Mail::Header:                  0
-    MIME::Base64:                  0
-    Net::DNS:                      0.39
-    Time::HiRes:                   0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+    Data::Dumper:  0
+    File::Temp:    0
+    Mail::Header:  0
+    MIME::Base64:  0
+    Net::DNS:      0.39
+    Time::HiRes:   0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.48
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

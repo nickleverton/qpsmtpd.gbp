@@ -178,20 +178,30 @@ address).  It returns a list of (local-part, domain).
 
 =cut
 
+# address components are defined as package variables so that they can
+# be overriden (in hook_pre_connection, for example) if people have
+# different needs.
+our $atom_expr = '[a-zA-Z0-9!#%&*+=?^_`{|}~\$\x27\x2D\/]+';
+our $address_literal_expr =
+  '(?:\[(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|IPv6:[0-9A-Fa-f:.]+)\])';
+our $subdomain_expr = '(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?)';
+our $domain_expr;
+our $qtext_expr = '[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]';
+our $text_expr  = '[\x01-\x09\x0B\x0C\x0E-\x7F]';
+
 sub canonify {
     my ($dummy, $path) = @_;
-    my $atom = '[a-zA-Z0-9!#\$\%\&\x27\*\+\x2D\/=\?\^_`{\|}~]+';
-    my $address_literal = 
-'(?:\[(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|IPv6:[0-9A-Fa-f:.]+)\])';
-    my $subdomain = '(?:[a-zA-Z0-9](?:[-a-zA-Z0-9]*[a-zA-Z0-9])?)';
-    my $domain = "(?:$address_literal|$subdomain(?:\.$subdomain)*)";
-    my $qtext = '[\x01-\x08\x0B\x0C\x0E-\x1F\x21\x23-\x5B\x5D-\x7F]';
-    my $text = '[\x01-\x09\x0B\x0C\x0E-\x7F]';
-
 
     # strip delimiters
     return undef unless ($path =~ /^<(.*)>$/);
     $path = $1;
+
+    my $domain = $domain_expr ? $domain_expr
+                              : "$subdomain_expr(?:\.$subdomain_expr)*";
+    # it is possible for $address_literal_expr to be empty, if a site
+    # doesn't want to allow them
+    $domain = "(?:$address_literal_expr|$domain)"
+      if !$domain_expr and $address_literal_expr;
 
     # strip source route
     $path =~ s/^\@$domain(?:,\@$domain)*://;
@@ -200,18 +210,18 @@ sub canonify {
     return "" if $path eq "";
 
     # bare postmaster is permissible, perl RFC-2821 (4.5.1)
-    return ("postmaster", undef) if $path eq "postmaster";
-    
+    return ("postmaster", undef) if $path =~ m/^postmaster$/i;
+
     my ($localpart, $domainpart) = ($path =~ /^(.*)\@($domain)$/);
     return (undef) unless defined $localpart;
 
-    if ($localpart =~ /^$atom(\.$atom)*/) {
+    if ($localpart =~ /^$atom_expr(\.$atom_expr)*/) {
         # simple case, we are done
         return ($localpart, $domainpart);
       }
-    if ($localpart =~ /^"(($qtext|\\$text)*)"$/) {
+    if ($localpart =~ /^"(($qtext_expr|\\$text_expr)*)"$/) {
         $localpart = $1;
-        $localpart =~ s/\\($text)/$1/g;
+        $localpart =~ s/\\($text_expr)/$1/g;
         return ($localpart, $domainpart);
       }
     return (undef);
@@ -275,28 +285,51 @@ sub format {
     return "<".$self->address().">";
 }
 
-=head2 user()
+=head2 user([$user])
 
 Returns the "localpart" of the address, per RFC-2821, or the portion
 before the '@' sign.
 
+If called with one parameter, the localpart is set and the new value is
+returned.
+
 =cut
 
 sub user {
-    my ($self) = @_;
+    my ($self, $user) = @_;
+    $self->{_user} = $user if defined $user;
     return $self->{_user};
 }
 
-=head2 host()
+=head2 host([$host])
 
 Returns the "domain" part of the address, per RFC-2821, or the portion
 after the '@' sign.
 
+If called with one parameter, the domain is set and the new value is
+returned.
+
 =cut
 
 sub host {
-    my ($self) = @_;
+    my ($self, $host) = @_;
+    $self->{_host} = $host if defined $host;
     return $self->{_host};
+}
+
+=head2 notes($key[,$value])
+
+Get or set a note on the address. This is a piece of data that you wish
+to attach to the address and read somewhere else. For example you can
+use this to pass data between plugins.
+
+=cut
+
+sub notes {
+  my ($self,$key) = (shift,shift);
+  # Check for any additional arguments passed by the caller -- including undef
+  return $self->{_notes}->{$key} unless @_;
+  return $self->{_notes}->{$key} = shift;
 }
 
 sub _addr_cmp {
