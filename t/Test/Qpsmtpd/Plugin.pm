@@ -1,4 +1,4 @@
-# $Id: Plugin.pm 315 2004-09-08 21:53:29Z msergeant $
+# $Id: /qpsmtpd/tags/0.31.1/t/Test/Qpsmtpd/Plugin.pm 6049 2005-11-16T15:31:23.581666Z ask  $
 
 package Test::Qpsmtpd::Plugin;
 1;
