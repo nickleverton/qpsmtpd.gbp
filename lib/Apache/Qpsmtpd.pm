@@ -1,4 +1,4 @@
-# $Id: Qpsmtpd.pm 440 2005-06-20 21:03:41Z msergeant $
+# $Id: Qpsmtpd.pm 509 2005-07-15 21:13:49Z msergeant $
 
 package Apache::Qpsmtpd;
 
@@ -90,9 +90,12 @@ sub run {
 }
 
 sub config_dir {
-    my $self = shift;
-    return "$self->{qpdir}/config";
+    my ($self, $config) = @_;
+    -e "$_/$config" and return $_
+        for "$self->{qpdir}/config";
+    return "/var/qmail/control";
 }
+
 
 sub plugin_dir {
     my $self = shift;

@@ -23,7 +23,6 @@ use POSIX ();
 
 sub register {
   my ($self, $qp, @args) = @_;
-  $self->register_hook("queue", "queue_handler");
 
   if (@args > 0) {
     $self->{_queue_exec} = $args[0];
@@ -36,16 +35,17 @@ sub register {
   $self->{_queue_exec} = $ENV{QMAILQUEUE} if $ENV{QMAILQUEUE};
 }
 
-sub queue_handler {
+sub hook_queue {
   my ($self, $transaction) = @_;
 
   # these bits inspired by Peter Samuels "qmail-queue wrapper"
-  pipe(MESSAGE_READER, MESSAGE_WRITER) or fault("Could not create message pipe"), exit;
-  pipe(ENVELOPE_READER, ENVELOPE_WRITER) or fault("Could not create envelope pipe"), exit;
-
+  pipe(MESSAGE_READER, MESSAGE_WRITER) or die("Could not create message pipe");
+  pipe(ENVELOPE_READER, ENVELOPE_WRITER) or die("Could not create envelope pipe");
+  
+  local $SIG{PIPE} = sub { die "SIGPIPE" };
   my $child = fork();
 
-  not defined $child and fault(451, "Could not fork"), exit;
+  not defined $child and die("Could not fork");
 
   if ($child) {
     # Parent
@@ -53,8 +53,8 @@ sub queue_handler {
                 select(ENVELOPE_WRITER); $| = 1;
     select($oldfh);
 
-    close MESSAGE_READER  or fault("close msg reader fault"),exit;
-    close ENVELOPE_READER or fault("close envelope reader fault"), exit;
+    close MESSAGE_READER  or die("close msg reader fault");
+    close ENVELOPE_READER or die("close envelope reader fault");
 
     $transaction->header->print(\*MESSAGE_WRITER);
     $transaction->body_resetpos;
@@ -105,6 +105,10 @@ sub queue_handler {
 
     my $rc = exec $queue_exec;
 
+    # close the pipe
+    close(MESSAGE_READER);
+    close(MESSAGE_WRITER);
+    
     exit 6; # we'll only get here if the exec fails
   }
 }

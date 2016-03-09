@@ -1,12 +1,14 @@
 package Qpsmtpd::Plugin;
+use Qpsmtpd::Constants;
 use strict;
 
-our %hooks = map { $_ => 1 } qw(
-    config  queue  data  data_post  quit  rcpt  mail  ehlo  helo
+our @hooks = qw(
+    logging config  queue  data  data_post  quit  rcpt  mail  ehlo  helo
     auth auth-plain auth-login auth-cram-md5
     connect  reset_transaction  unrecognized_command  disconnect
-    deny logging ok pre-connection post-connection
+    deny ok pre-connection post-connection
 );
+our %hooks = map { $_ => 1 } @hooks;
 
 sub new {
   my $proto = shift;
@@ -16,8 +18,11 @@ sub new {
 
 sub register_hook {
   my ($plugin, $hook, $method, $unshift) = @_;
-  
+
   die $plugin->plugin_name . " : Invalid hook: $hook" unless $hooks{$hook};
+
+  $plugin->{_qp}->log(LOGDEBUG, $plugin->plugin_name, "hooking", $hook)
+      unless $hook =~ /logging/; # can't log during load_logging()
 
   # I can't quite decide if it's better to parse this code ref or if
   # we should pass the plugin object and method name ... hmn.
@@ -32,7 +37,9 @@ sub _register {
   my $self = shift;
   my $qp = shift;
   local $self->{_qp} = $qp;
-  $self->register($qp, @_);
+  $self->init($qp, @_)     if $self->can('init');
+  $self->_register_standard_hooks($qp, @_);
+  $self->register($qp, @_) if $self->can('register');
 }
 
 sub qp {
@@ -58,6 +65,14 @@ sub spool_dir {
   shift->qp->spool_dir;
 }
 
+sub auth_user {
+    shift->qp->auth_user;
+}
+
+sub auth_mechanism {
+    shift->qp->auth_mechanism;
+}
+
 sub temp_file {
   my $self = shift;
   my $tempfile = $self->qp->temp_file;
@@ -74,7 +89,7 @@ sub temp_dir {
 
 # plugin inheritance:
 # usage:
-#  sub register {
+#  sub init {
 #    my $self = shift;
 #    $self->isa_plugin("rhsbl");
 #    $self->SUPER::register(@_);
@@ -82,18 +97,23 @@ sub temp_dir {
 sub isa_plugin {
   my ($self, $parent) = @_;
   my ($currentPackage) = caller;
-  my $newPackage = $currentPackage."::_isa_";
 
-  return if defined &{"${newPackage}::register"};
+  my $cleanParent = $parent;
+  $cleanParent =~ s/\W/_/g;
+  my $newPackage = $currentPackage."::_isa_$cleanParent";
 
-  Qpsmtpd::_compile($self->plugin_name . "_isa",
+  # don't reload plugins if they are already loaded
+  return if defined &{"${newPackage}::plugin_name"};
+
+  $self->compile($self->plugin_name . "_isa_$cleanParent",
                     $newPackage,
                     "plugins/$parent"); # assumes Cwd is qpsmtpd root
-
+  warn "---- $newPackage\n";
   no strict 'refs';
   push @{"${currentPackage}::ISA"}, $newPackage;
 }
 
+# why isn't compile private?  it's only called from Plugin and Qpsmtpd.
 sub compile {
     my ($class, $plugin, $package, $file, $test_mode) = @_;
     
@@ -140,5 +160,17 @@ sub compile {
     eval $eval;
     die "eval $@" if $@;
 }
+
+sub _register_standard_hooks {
+  my ($plugin, $qp) = @_;
+
+  for my $hook (@hooks) {
+    my $hooksub = "hook_$hook";
+    $hooksub  =~ s/\W/_/g;
+    $plugin->register_hook( $hook, $hooksub )
+      if ($plugin->can($hooksub));
+  }
+}
+
 
 1;
