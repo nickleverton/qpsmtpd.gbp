@@ -11,12 +11,12 @@ Subscribe by sending mail to qpsmtpd-subscribe@perl.org
 
 We use git for version control.
 
-Ask owns the master repository at git://github.com/abh/qpsmtpd.git
+Ask owns the master repository at git://github.com/smtpd/qpsmtpd.git
 
 We suggest using github to host your repository -- it makes your
 changes easily accessible for pulling into the master.  After you
 create a github account, go to
-http://github.com/abh/qpsmtpd/tree/master and click on the "fork"
+http://github.com/smtpd/qpsmtpd/tree/master and click on the "fork"
 button to get your own repository.
 
 =head3 Making a working Copy
@@ -52,9 +52,18 @@ When you're ready to check it in...
   git add lib/Qpsmtpd.pm     # to let git know you changed the file
   git add --patch plugin/tls # interactive choose which changes to add
   git diff --cached          # review changes added
-  git commit
+  git commit                 # describe the commit
   git log -p                 # review your commit a last time
   git push origin            # to send to github
+
+=head3 Commit Descriptions
+
+Though not required, it's a good idea to begin the commit message with
+a single short (less than 50 character) line summarizing the change,
+followed by a blank line and then a more thorough description. Tools
+that turn commits into email, for example, use the first line on the
+Subject: line and the rest of the commit in the body.
+(From: L<git-commit(1)>)
 
 =head3 Submit patches by mail
 
@@ -74,11 +83,11 @@ them to a git repository (for example on github).
 
 =head3 Merging changes back in from the master repository
 
-Tell git about the master repository.  We're going to call it 'abh'
+Tell git about the master repository.  We're going to call it 'smtpd'
 for now, but you could call it anything you want.  You only have to do
 this once.
 
-  git remote add abh git://github.com/abh/qpsmtpd.git
+  git remote add smtpd git://github.com/smtpd/qpsmtpd.git
 
 Pull in data from all remote branches
 
@@ -86,7 +95,7 @@ Pull in data from all remote branches
 
 Forward-port local commits to the updated upstream head
 
-  git rebase abh/master
+  git rebase smtpd/master
 
 If you have a change that conflicts with an upstream change (git will
 let you know) you have two options. 
