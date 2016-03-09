@@ -2,7 +2,7 @@
 
 exim-bsmtp
 
-$Id: exim-bsmtp 618 2006-02-26 12:22:16Z ask $
+$Id: exim-bsmtp 623 2006-02-28 07:04:52Z aqua $
 
 =head1 DESCRIPTION
 
@@ -90,8 +90,7 @@ sub hook_queue {
                "MAIL FROM:<", ($txn->sender->address || ''), ">\n";
     print $tmp "RCPT TO:<", ($_->address || ''), ">\n"
       for $txn->recipients;
-    print $tmp "DATA\n",
-               $txn->header->as_string, "\n";
+    print $tmp "DATA\n", $txn->header->as_string;
     $txn->body_resetpos;
     while (my $line = $txn->body_getline) {
       $line =~ s/^\./../;

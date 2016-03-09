@@ -12,32 +12,46 @@ use Qpsmtpd::Constants;
 use IO::Socket;
 use IO::Select;
 use Socket;
-use Getopt::Long;
+use Getopt::Long qw(:config no_ignore_case);
 use POSIX qw(:sys_wait_h :errno_h :signal_h);
+use Net::DNS::Header;
 use strict;
 $| = 1;
 
+my $has_ipv6 = Qpsmtpd::TcpServer::has_ipv6;
+
+if ($has_ipv6) {
+  eval 'use Socket6';
+}
+
 # Configuration
 my $MAXCONN   = 15;                  # max simultaneous connections
-my $PORT      = 2525;                # port number
+my @PORT;                            # port number(s)
 my @LOCALADDR;                       # ip address(es) to bind to
-my $USER      = 'smtpd';             # user to suid to
 my $MAXCONNIP = 5;                   # max simultaneous connections from one IP
 my $PID_FILE   = '';
 my $DETACH;                          # daemonize on startup
+my $NORDNS;
+
+my $USER = (getpwuid $>)[0];         # user to suid to
+$USER = "smtpd" if $USER eq "root";
 
 sub usage {
         print <<"EOT";
 usage: qpsmtpd-forkserver [ options ]
  -l, --listen-address addr : listen on specific address(es); can be specified
-                             multiple times for multiple bindings.  Default is
-			     0.0.0.0 (all interfaces).
- -p, --port P              : listen on a specific port; default 2525
+                             multiple times for multiple bindings. IPv6 
+                             addresses must be inside square brackets [], and 
+                             don't need to be zero padded.
+                             Default is [::] (if has_ipv6) or 0.0.0.0 (if not)
+ -p, --port P              : listen on a specific port; default 2525; can be
+                             specified multiple times for multiple bindings.
  -c, --limit-connections N : limit concurrent connections to N; default 15
  -u, --user U              : run as a particular user (default 'smtpd')
  -m, --max-from-ip M       : limit connections from a single IP; default 5
      --pid-file P          : print main servers PID to file P
  -d, --detach              : detach from controlling terminal (daemonize)
+ -H, --no-rdns             : don't perform reverse DNS lookups
 EOT
         exit 0;
 }
@@ -46,22 +60,42 @@ GetOptions('h|help' => \&usage,
            'l|listen-address=s' => \@LOCALADDR,
            'c|limit-connections=i' => \$MAXCONN,
            'm|max-from-ip=i' => \$MAXCONNIP,
-           'p|port=i' => \$PORT,
+           'p|port=s' => \@PORT,
            'u|user=s' => \$USER,
            'pid-file=s' => \$PID_FILE,
            'd|detach' => \$DETACH,
-	  ) || &usage;
+	   'H|no-rdns' => \$NORDNS,
+          ) || &usage;
 
 # detaint the commandline
-if ($PORT =~ /^(\d+)$/) { $PORT = $1 } else { &usage }
-@LOCALADDR = ( '0.0.0.0' ) if !@LOCALADDR;
+if ($has_ipv6) {
+  @LOCALADDR = ( '[::]' ) if !@LOCALADDR;
+}
+else {
+  @LOCALADDR = ( '0.0.0.0' ) if !@LOCALADDR;
+}
+@PORT = ( 2525 ) if !@PORT;
+
+my @LISTENADDR;
 for (0..$#LOCALADDR) {
-  if ($LOCALADDR[$_] =~ /^([\d\w\-.]+)$/) {
-    $LOCALADDR[$_] = $1;
+  if ($LOCALADDR[$_] =~ /^(\[.*\]|[\d\w\-.]+)(?::(\d+))?$/) {
+    if ( defined $2 ) {
+      push @LISTENADDR, { 'addr' => $1, 'port' => $2 };
+    } else {
+      my $addr = $1;
+      for (0..$#PORT) {
+        if ( $PORT[$_] =~ /^(\d+)$/ ) {
+          push @LISTENADDR, { 'addr' => $addr, 'port' => $1 };
+        } else {
+          &usage;
+        }
+      }
+    }
   } else {
     &usage;
   }
 }
+
 if ($USER =~ /^([\w\-]+)$/) { $USER = $1 } else { &usage }
 if ($MAXCONN =~ /^(\d+)$/) { $MAXCONN = $1 } else { &usage }
 
@@ -91,16 +125,24 @@ $SIG{INT} = \&HUNTSMAN;
 $SIG{TERM} = \&HUNTSMAN;
 
 my $select = new IO::Select;
+my $server;
 
 # establish SERVER socket(s), bind and listen.
-for my $listen_addr (@LOCALADDR) {
-  my $server = IO::Socket::INET->new(LocalPort => $PORT,
-                                     LocalAddr => $listen_addr,
+for my $listen_addr (@LISTENADDR) {
+  my @Socket_opts = (LocalPort => $listen_addr->{'port'},
+                                     LocalAddr => $listen_addr->{'addr'},
                                      Proto     => 'tcp',
                                      Reuse     => 1,
                                      Blocking  => 0,
-                                     Listen    => SOMAXCONN )
-    or die "Creating TCP socket $listen_addr:$PORT: $!\n";
+                                     Listen    => SOMAXCONN);
+  if ($has_ipv6) {
+    $server = IO::Socket::INET6->new(@Socket_opts)
+      or die "Creating TCP socket $listen_addr->{'addr'}:$listen_addr->{'port'}: $!\n";
+  }
+  else {
+    $server = IO::Socket::INET->new(@Socket_opts)
+      or die "Creating TCP socket $listen_addr->{'addr'}:$listen_addr->{'port'}: $!\n";
+  }
   IO::Handle::blocking($server, 0);
   $select->add($server);
 }
@@ -137,9 +179,10 @@ my $groups = "$qgid $qgid";
 while (my ($name,$passwd,$gid,$members) = getgrent()) {
     my @m = split(/ /, $members);
     if (grep {$_ eq $USER} @m) {
-	$groups .= " $gid";
+        $groups .= " $gid";
     }
 }
+endgrent;
 $) = $groups;
 POSIX::setgid($qgid) or
       die "unable to change gid: $!\n";
@@ -149,11 +192,13 @@ $> = $quid;
 
 $qpsmtpd->load_plugins;
 
-::log(LOGINFO,"Listening on port $PORT");
+foreach my $listen_addr ( @LISTENADDR ) {
+    ::log(LOGINFO,"Listening on $listen_addr->{'addr'}:$listen_addr->{'port'}");
+}
 ::log(LOGINFO, 'Running as user '.
-	(getpwuid($>) || $>) .
-	', group '.
-	(getgrgid($)) || $)));
+        (getpwuid($>) || $>) .
+        ', group '.
+        (getgrgid($)) || $)));
 
 if ($DETACH) {
   open STDIN, '/dev/null' or die "/dev/null: $!";
@@ -191,14 +236,13 @@ while (1) {
       next;
     }
     IO::Handle::blocking($client, 1);
-    my ($port, $iaddr) = sockaddr_in($hisaddr);
-    my $localsockaddr = getsockname($client);
-    my ($lport, $laddr) = sockaddr_in($localsockaddr);
+    # get local/remote hostname, port and ip address
+    my ($port, $iaddr, $lport, $laddr, $nto_iaddr, $nto_laddr) = Qpsmtpd::TcpServer::lrpip($server, $client, $hisaddr);
 
     my ($rc, @msg) = $qpsmtpd->run_hooks("pre-connection",
-                                         remote_ip    => inet_ntoa($iaddr),
+                                         remote_ip    => $nto_iaddr,
                                          remote_port  => $port,
-                                         local_ip     => inet_ntoa($laddr),
+                                         local_ip     => $nto_laddr,
                                          local_port   => $lport,
                                          max_conn_ip  => $MAXCONNIP,
                                          child_addrs  => [values %childstatus],
@@ -223,8 +267,8 @@ while (1) {
     my $pid = safe_fork();
     if ($pid) {
       # parent
-      $childstatus{$pid} = $iaddr;	# add to table
-      # $childstatus{$pid} = 1;	# add to table
+      $childstatus{$pid} = $iaddr;        # add to table
+      # $childstatus{$pid} = 1;        # add to table
       $running++;
       close($client);
       next;
@@ -232,9 +276,12 @@ while (1) {
     # otherwise child
   
     # all children should have different seeds, to prevent conflicts
-    srand( time ^ ($$ + ($$ << 15)) );
+    srand();
+    for (0 .. rand(65536)) {
+	Net::DNS::Header::nextid();
+    }
   
-    close($server);
+    close $_ for $select->handles;
   
     $SIG{$_} = 'DEFAULT' for keys %SIG;
     $SIG{ALRM} = sub { 
@@ -242,11 +289,9 @@ while (1) {
        ::log(LOGINFO, "Connection Timed Out"); 
        exit; };
   
-    $ENV{TCPLOCALIP} = inet_ntoa($laddr);
-    # my ($port, $iaddr) = sockaddr_in($hisaddr);
-    $ENV{TCPREMOTEIP} = inet_ntoa($iaddr);
-    $ENV{TCPREMOTEHOST} = gethostbyaddr($iaddr, AF_INET) || "Unknown";
-  
+    # set enviroment variables
+    ($ENV{TCPLOCALIP}, $ENV{TCPREMOTEIP}, $ENV{TCPREMOTEHOST}) = Qpsmtpd::TcpServer::tcpenv($nto_laddr, $nto_iaddr);
+    
     # don't do this!
     #$0 = "qpsmtpd-forkserver: $ENV{TCPREMOTEIP} / $ENV{TCPREMOTEHOST}";
   
@@ -255,6 +300,7 @@ while (1) {
     # dup to STDIN/STDOUT
     POSIX::dup2(fileno($client), 0);
     POSIX::dup2(fileno($client), 1);
+    close $client;
     
     $qpsmtpd->start_connection
       (

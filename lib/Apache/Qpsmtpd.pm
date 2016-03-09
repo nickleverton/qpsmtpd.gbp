@@ -1,4 +1,4 @@
-# $Id: Qpsmtpd.pm 618 2006-02-26 12:22:16Z ask $
+# $Id: Qpsmtpd.pm 631 2006-04-07 18:58:02Z jpeacock $
 
 package Apache::Qpsmtpd;
 
@@ -131,7 +131,7 @@ sub read_input {
     while (defined(my $data = $self->getline)) {
         $data =~ s/\r?\n$//s; # advanced chomp
         $self->log(LOGDEBUG, "dispatching $data");
-        defined $self->dispatch(split / +/, $data)
+        defined $self->dispatch(split / +/, $data, 2)
             or $self->respond(502, "command unrecognized: '$data'");
         last if $self->{_quitting};
     }
