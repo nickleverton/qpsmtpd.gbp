@@ -1,4 +1,61 @@
 
+0.94  Sep 05, 2014
+
+  Added null char in username check to auth_cvm plugin
+
+  Build updates for CentOS 6 (Robert Siddall)
+
+  SpamAssassin plugin fixes (Priyadi Nurcahyo)
+
+  Added plugins/stunnel (luzluna)
+
+  Fixed a config error in Apache/Qpsmtpd.pm (luzluna)
+
+  loadcheck: imported (Robert Siddall)
+
+     return a useful error message when temp rejecting connections (Priyadi)
+
+  smtp_forward: added Postfix XCLIENT support (Chase Venters)
+
+  smtp_forward: add the remote message id in log entry (tpoindessous)
+
+  clamdscan: added support for remote (TCP/IP) clamd (M Simerson)
+
+  Updated DMARC plugin to use Mail::DMARC
+
+  Updated SPF & DKIM plugins to store data for DMARC processing
+
+  karma plugin: added spammy TLD penalty
+
+  a few more log prefixes (corralling stragglers)
+
+
+0.93  Dec 17, 2013
+
+  Added Authentication-Results header
+    moves Authentication-Results to Original-Authentication-Results on inbound.
+    no longer puts auth info in Received header
+
+  TcpServer: ignore DNS search path and explicitely request PTR lookups (speedup)
+
+  store envelope TO/FROM in connection notes
+
+  raised max msg size in clamdscan
+
+  SPF enabled by default (if Mail::SPF available)
+
+  auth_vpopmaild: added taint checking to responses
+
+  added run files for most common deployment methods (easier install)
+
+  untaint config data passed to plugins
+
+  Qpsmtpd.pm: split config args on /\s+/, was / /
+    (compatibility with newer versions of perl)
+
+  dmarc: added subdomain policy handling
+
+
 0.92  Apr 20, 2013
 
   new plugins: dmarc, fcrdns
