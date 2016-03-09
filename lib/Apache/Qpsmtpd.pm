@@ -1,4 +1,4 @@
-# $Id: /qpsmtpd/tags/0.31.1/lib/Apache/Qpsmtpd.pm 6049 2005-11-16T15:31:23.581666Z ask  $
+# $Id: Qpsmtpd.pm 618 2006-02-26 12:22:16Z ask $
 
 package Apache::Qpsmtpd;
 
