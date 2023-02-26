@@ -1,35 +1,29 @@
-# Slovak translations for qpsmtpd package
-# Slovenské preklady pre balík qpsmtpd.
-# Copyright (C) 2012 THE qpsmtpd'S COPYRIGHT HOLDER
+# Debconf translations for qpsmtpd.
+# Copyright (C) 2022 THE qpsmtpd'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the qpsmtpd package.
-# Automatically generated, 2012.
-# Slavko <linux@slavino.sk>, 2012.
+# Paulo Henrique de Lima Santana (phls) <phls@debian.org>, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: qpsmtpd 0.84-8\n"
+"Project-Id-Version: qpsmtpd_0.94-4\n"
 "Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
 "POT-Creation-Date: 2019-01-11 10:02+0100\n"
-"PO-Revision-Date: 2012-08-29 11:10+0200\n"
-"Last-Translator: Slavko <linux@slavino.sk>\n"
-"Language-Team: slovenčina <debian-l10n-slovak@lists.debian.org>\n"
-"Language: sk\n"
+"PO-Revision-Date: 2022-12-04 20:19-0300\n"
+"Last-Translator: Paulo Henrique de Lima Santana (phls) <phls@debian.org>\n"
+"Language-Team: Brazilian Portuguese <debian-l10n-portuguese@lists.debian."
+"org>\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-POFile-SpellExtra: okamžiku 4xx share dávate spamtrap Debiane\n"
-"X-POFile-SpellExtra: doménových plugins rcpthosts forkuje 2526 Maildir\n"
-"X-POFile-SpellExtra: loopback TCP soft-failure korešpondujúcu usr\n"
-"X-POFile-SpellExtra: Qpsmtpd dpkg-reconfigure Debian localhost maildir 25\n"
-"X-POFile-SpellExtra: IP doménové prefork README qpsmtpd 127 MTA none etc\n"
-"X-POFile-SpellExtra: preposielanie forkserver relay\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"X-Generator: Gtranslator 42.0\n"
 
 #. Type: boolean
 #. Description
 #: ../qpsmtpd.templates:1001
 msgid "Enable qpsmtpd startup at boot time?"
-msgstr "Zapnúť spúšťanie qpsmtpd pri štarte systému?"
+msgstr "Ativar a inicialização do qpsmtpd no momento da inicialização?"
 
 #. Type: boolean
 #. Description
@@ -38,9 +32,9 @@ msgid ""
 "Because most MTAs in Debian listen on one or all network interfaces by "
 "default, when first installed qpsmtpd cannot normally be started."
 msgstr ""
-"Pretože väčšina MTA v Debiane predvolene prijíma spojenia na jednom alebo "
-"všetkých sieťových rozhraniach, nemožno pri prvej inštalácii bežne qpsmtpd "
-"spustiť."
+"Como a maioria dos MTAs no Debian escuta uma ou todas as interfaces de rede "
+"por padrão, quando instalado pela primeira vez, o qpsmtpd normalmente não "
+"pode ser iniciado."
 
 #. Type: boolean
 #. Description
@@ -53,12 +47,12 @@ msgid ""
 "common MTAs to work with qpsmtpd can be found after installation in /usr/"
 "share/doc/qpsmtpd/README.Debian."
 msgstr ""
-"Pred zapnutím qpsmtpd, musíte najprv nastaviť svoj lokálny MTA tak, aby "
-"nechal voľný TCP port pre SMTP aspoň na jednom rozhraní. Bežným riešením je "
-"nechať svoj MTA prijímal spojenia na rozhraní loopback (127.0.0.1), pričom "
-"qpsmtpd bude prijímať spojenia na externom rozhraní. Inštrukcie na "
-"nastavenie bežných MTA tak, aby pracovali spolu s qpsmtpd môžete po "
-"inštalácii nájsť v /usr/share/doc/qpsmtpd/README.Debian."
+"Antes de habilitar o qpsmtpd, você deve primeiro configurar seu MTA local "
+"para não se vincular à porta TCP SMTP em pelo menos uma interface. A "
+"abordagem mais comum é deixar seu MTA ouvindo na interface de loopback "
+"(127.0.0.1), com o qpsmtpd ouvindo na interface externa. Instruções para "
+"configurar os MTAs comuns para trabalhar com o qpsmtpd podem ser encontradas "
+"após a instalação em /usr/share/doc/qpsmtpd/README.Debian."
 
 #. Type: boolean
 #. Description
@@ -67,14 +61,14 @@ msgid ""
 "Once you have adjusted your MTA configuration, you can enable qpsmtpd by "
 "restarting this configuration, by running 'dpkg-reconfigure qpsmtpd'."
 msgstr ""
-"Po prispôsobení nastavenia svojho MTA, môžete zapnúť qpsmtpd opätovným "
-"spustením tejto konfigurácie pomocou „dpkg-reconfigure qpsmtpd”."
+"Depois de ajustar a configuração do MTA, você pode ativar o qpsmtpd "
+"reiniciando esta configuração, executando \"dpkg-reconfigure qpsmtpd\"."
 
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:2001
 msgid "Qpsmtpd server type:"
-msgstr "Typ servera Qpsmtpd:"
+msgstr "Tipo de servidor qpsmtpd:"
 
 #. Type: select
 #. Description
@@ -87,18 +81,18 @@ msgid ""
 "handle new connections, offering slightly better performance at the cost of "
 "more memory."
 msgstr ""
-"Qpsmtpd podporuje, na spracovanie spojení, dva modely spracovania. Model "
-"„forkserver” používa pri nečinnosti jeden proces a na spracovanie spojení "
-"forkuje nový proces. Takto používa menej pamäte, ale mierne znižuje "
-"priepustnosť servera. Model „prefork” necháva dostupných niekoľko nečinných "
-"procesov na spracovanie nových spojení, čím ponúka lepší výkon za cenu "
-"väčšej spotreby pamäte."
+"O qpsmtpd suporta dois modelos de processo para manipulação de conexões. O "
+"modelo \"forkserver\" usa um único processo quando ocioso e cria forks de "
+"novos processos para lidar com as conexões. Isso usa menos memória, mas "
+"reduz ligeiramente a taxa de transferência do servidor. O modelo \"prefork\" "
+"mantém um spool de processos ociosos disponíveis para lidar com novas "
+"conexões, oferecendo um desempenho um pouco melhor ao custo de mais memória."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:3001
 msgid "Addresses on which to listen for incoming SMTP connections:"
-msgstr "Adresy, na ktorých prijímať prichádzajúce spojenia SMTP:"
+msgstr "Endereços para escutar as conexões SMTP recebidas:"
 
 #. Type: string
 #. Description
@@ -109,10 +103,10 @@ msgid ""
 "setting empty, qpsmtpd will listen on all interfaces available at startup "
 "time."
 msgstr ""
-"Zadajte jednu alebo viac lokálnych adries IP, oddelených medzerami, na "
-"ktorých má qpsmtpd prijímať prichádzajúce spojenia SMTP. Ak necháte toto "
-"nastavenie prázdne, qpsmtpd bude prijímať spojenia na všetkých rozhraniach, "
-"dostupných pri štarte."
+"Insira um ou mais endereços IPs locais, separados por espaço, nos quais o "
+"qpsmtpd deve escutar as conexões SMTP recebidas. Se você deixar esta "
+"configuração em branco, o qpsmtpd escutará em todas as interfaces "
+"disponíveis no momento da inicialização."
 
 #. Type: string
 #. Description
@@ -122,10 +116,10 @@ msgid ""
 "local MTA, you may wish to have qpsmtpd listen on all external interfaces, "
 "while leaving your local MTA listening on the loopback device (127.0.0.1)."
 msgstr ""
-"Ak zamýšľate použiť qpsmtpd na zviazané doručovanie zo vzdialených strojov "
-"do lokálnej MTA, možno budete chcieť aby qpsmtpd prijímal spojenia na "
-"všetkých externých rozhraniach, zatiaľ čo lokálny MTA bude prijímať len na "
-"rozhraní loopback (127.0.0.1)."
+"Se você pretende usar o qpsmtpd para juntar entregas de máquinas remotos em "
+"um MTA local, você pode querer que o qpsmtpd escute em todas as interfaces "
+"externas, enquanto deixa seu MTA local escutando no dispositivo de loopback "
+"(127.0.0.1)."
 
 #. Type: string
 #. Description
@@ -135,15 +129,15 @@ msgid ""
 "the default port 25; do this by appending :<port> to the interface, as in "
 "\"127.0.0.1:2526\"."
 msgstr ""
-"Pre každé rozhranie môžete voliteľne definovať aj číslo portu, na ktorom "
-"bude prijímať spojenia, namiesto predvoleného portu 25; pridaním :<port> k "
-"rozhraniu, napríklad „127.0.0.1:2526”."
+"Para cada interface, você pode opcionalmente especificar uma porta para "
+"escutar em vez da porta padrão 25; faça isso anexando :<port> à interface, "
+"como em \"127.0.0.1:2526\"."
 
 #. Type: select
 #. Description
 #: ../qpsmtpd.templates:4001
 msgid "Queueing method for accepted mail:"
-msgstr "Metóda zaraďovania prijatých emailov do radu:"
+msgstr "Método de enfileiramento para e-mail aceito:"
 
 #. Type: select
 #. Description
@@ -153,9 +147,9 @@ msgid ""
 "you deliver your mail locally, choose the method corresponding to the "
 "installed MTA (the installer will try to pick the correct default.)"
 msgstr ""
-"Vyberte metódu, akou budú emaily zaraďované do radu, po ich doručení cez "
-"SMTP. Ak doručujete emaily lokálne, zvoľte metódu korešpondujúcu s "
-"nainštalovaným MTA (inštalátor sa pokúsi zistiť správnu.)"
+"Selecione o método para enfileirar o e-mail depois de ser entregue via SMTP. "
+"Se você entrega seu e-mail localmente, escolha o método correspondente ao "
+"MTA instalado (o instalador tentará escolher o padrão correto)."
 
 #. Type: select
 #. Description
@@ -165,8 +159,9 @@ msgid ""
 "MTA (local or remote).  You will then be prompted to enter a destination "
 "host."
 msgstr ""
-"Vyberte „proxy” ak má qpsmtpd vystupovať ako SMTP proxy pre iný MTA (lokálny "
-"alebo vzdialený). Potom budete vyzvaný na zadanie cieľového stroja."
+"Selecione \"proxy\" se desejar que o qpsmtpd atue como um proxy SMTP para "
+"outro MTA (local ou remoto). Você será solicitado a inserir uma máquina de "
+"destino."
 
 #. Type: select
 #. Description
@@ -175,9 +170,9 @@ msgid ""
 "Select \"maildir\" to have qpsmtpd deliver into a local maildir-format spool "
 "instead of queueing it for delivery (e.g. if you're setting up a spamtrap.)"
 msgstr ""
-"Vyberte „maildir”, ak má qpsmtpd doručovať do lokálneho úložiska vo formáte "
-"maildir, namiesto zaraďovania do radu na doručenie (napr. ak nastavujte "
-"spamtrap.)"
+"Selecione \"maildir\" para que o qpsmtpd seja entregue em um spool de "
+"formato maildir local em vez de colocá-lo na fila para entrega (por exemplo, "
+"se você estiver configurando um spamtrap)."
 
 #. Type: select
 #. Description
@@ -186,14 +181,14 @@ msgid ""
 "If you select \"none,\" no queueing will be done at all, unless you manually "
 "configure it yourself by editing /etc/qpsmtpd/plugins."
 msgstr ""
-"Ak vyberiete „none” nebude vykonávané zaraďovanie do radu, kým to sám "
-"manuálne nenastavíte úpravou /etc/qpsmtpd/plugins."
+"Se você selecionar \"nenhum\", nenhuma fila será feita, a menos que você "
+"mesmo configure manualmente editando /etc/qpsmtpd/plugins."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:5001
 msgid "Destination host/port for SMTP proxy delivery:"
-msgstr "Cieľový stroj/port na doručovanie SMTP proxy:"
+msgstr "Máquina/porta de destino para entrega de proxy SMTP:"
 
 #. Type: string
 #. Description
@@ -203,15 +198,15 @@ msgid ""
 "or IP address of that host here.  You can optionally add a port number after "
 "a colon, such as \"localhost:25\"."
 msgstr ""
-"Aby qpsmtpd vystupoval ako SMTP proxy pre iný stroj, zadajte tu meno alebo "
-"adresu IP tohoto stroja. Voliteľne môžete za dvojbodkou pridať číslo portu, "
-"napríklad „localhost:25”."
+"Para que o qpsmtpd atue como um proxy SMTP para outra máquina, informe aqui "
+"o nome da máquina ou o endereço IP dessa máquina. Opcionalmente, você pode "
+"adicionar um número de porta após dois pontos, como em \"localhost:25\"."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:6001
 msgid "Destination Maildir for maildir-type delivery:"
-msgstr "Cieľový Maildir na doručovanie typu maildir:"
+msgstr "Maildir de destino para entrega do tipo maildir:"
 
 #. Type: string
 #. Description
@@ -221,15 +216,15 @@ msgid ""
 "enter a location for that maildir.  A maildir will be created in that "
 "location if it does not exist already."
 msgstr ""
-"Aby qpsmtpd doručoval prijaté emaily do lokálneho úložiska vo formáte "
-"maildir, zadajte umiestnenie tohoto maildir. V tomto umiestnení bude bude "
-"vytvorený maildir, ak ešte neexistuje."
+"Para que o qpsmtpd entregue o e-mail recebido em um spool de formato maildir "
+"local, insira um local para esse maildir. Um maildir será criado nesse local "
+"se ainda não existir."
 
 #. Type: boolean
 #. Description
 #: ../qpsmtpd.templates:7001
 msgid "Proceed without a queueing plugin selected?"
-msgstr "Pokračovať bez zvoleného zásuvného modulu zaraďovania do radu?"
+msgstr "Continuar sem um plug-in de enfileiramento selecionado?"
 
 #. Type: boolean
 #. Description
@@ -242,12 +237,13 @@ msgid ""
 "potential cost of wasted bandwidth and eventual bouncing of possibly "
 "legitimate mail."
 msgstr ""
-"Vybratím zásuvného modulu doručovania „none” ste vypli lokálne zaraďovanie "
-"do radu prichádzajúcich emailov. Táto voľba bude brániť qpsmtpd uchovávať "
-"emaily, kým manuálne nenastavíte metódu zaraďovania do radu. Každý stroj, "
-"ktorý sa vám pokúsi doručiť mail, bude dovtedy dostávať správy 4xx soft-"
-"failure, za cenu premrhanej šírky pásma a prípadného odmietnutia legitímnych "
-"emailov."
+"Ao selecionar \"nenhum\" como um plug-in de enfileiramento, você desativou o "
+"enfileiramento local de e-mails recebidos. Isso evitará que qualquer e-mail "
+"seja colocado em spool pelo qpsmtpd até que você configure manualmente um "
+"método de enfileiramento. Até lá, todas as máquinas que tentarem entregar e-"
+"mails para você receberão mensagens de falha de software 4xx, com o custo "
+"potencial de desperdício de largura de banda e eventual rejeição de e-mails "
+"possivelmente legítimos."
 
 #. Type: boolean
 #. Description
@@ -259,17 +255,17 @@ msgid ""
 "SMTP proxy method instead, configuring it to proxy into your MTA on a "
 "suitable local address/port."
 msgstr ""
-"Na manuálne nastavenie zaraďovania do radu, upravte /etc/qpsmtpd/plugins a "
-"zvoľte jednu z metód zaraďovania do radu, ktoré sú tu vypísané. Ak v zozname "
-"nevidíte svoj nainštalovaný MTA a nie ste si istý čo urobiť, vyberte tu "
-"„Zrušiť” a vyberte namiesto toho metódu SMTP proxy, nastavte preposielanie "
-"do svojho MTA na vhodnej lokálnej adrese/porte."
+"Para configurar o enfileiramento manualmente, edite /etc/qpsmtpd/plugins e "
+"selecione um dos métodos de enfileiramento listados. Se você não viu seu MTA "
+"instalado na lista e não tem certeza do que fazer, escolha \"Cancelar\" aqui "
+"e selecione o método de proxy SMTP, configurando-o como proxy em seu MTA em "
+"um endereço/porta local adequado."
 
 #. Type: string
 #. Description
 #: ../qpsmtpd.templates:8001
 msgid "Destination domain(s) to accept mail for (blank for none):"
-msgstr "Cieľová doména(y) prijímaných emailov (prázdne pre žiadnu):"
+msgstr "Domínio(s) de destino para aceitar e-mails (em branco para nenhum):"
 
 #. Type: string
 #. Description
@@ -283,13 +279,13 @@ msgid ""
 "as used for that MTA (the installer will attempt to extract that setting as "
 "a default.)"
 msgstr ""
-"Zadajte zoznam doménových mien, pre ktoré má qpsmtpd prijímať emaily, "
-"oddelené medzerami. Tento zoznam by mal zahŕňať všetky mená strojov alebo "
-"doménové mená, pre ktoré zamýšľate akceptovať lokálne doručenie, ako aj "
-"všetky domény prijímateľov, pre ktoré má poskytovať prenos (relay) pošty. Vo "
-"všeobecnosti, ak zamýšľate prenášať prijaté emaily do lokálneho MTA, tento "
-"zoznam by mal byť rovnaký, ako ten v MTA (inštalátor sa predvolene pokúsi "
-"zistiť toto nastavenie.)"
+"Insira uma lista de nomes de domínio para os quais o qpsmtpd deve aceitar e-"
+"mail, separados por espaço. Essa lista deve incluir qualquer nome de máquina "
+"ou nome de domínio para o qual você pretenda aceitar entregas localmente, "
+"bem como quaisquer domínios de destinatários para os quais você pretenda "
+"agir como um retransmissor de e-mails. Em geral, se você pretende fazer o "
+"spool de e-mail recebido em um MTA local, essa lista deve ser a mesma usada "
+"para esse MTA (o instalador tentará extrair essa configuração como padrão)."
 
 #. Type: string
 #. Description
@@ -298,14 +294,14 @@ msgid ""
 "If you prefer to manage this list manually, leave the entry blank and edit "
 "the file /etc/qpsmtpd/rcpthosts."
 msgstr ""
-"Ak dávate prednosť spravovaniu tohoto zoznamu manuálne, nechajte túto "
-"položku prázdnu a upravte súbor /etc/qpsmtpd/rcpthosts."
+"Se preferir gerenciar esta lista manualmente, deixe a entrada em branco e "
+"edite o arquivo /etc/qpsmtpd/rcpthosts."
 
 #. Type: note
 #. Description
 #: ../qpsmtpd.templates:9001
 msgid "Incompatible upstream naming of check_* plugins"
-msgstr ""
+msgstr "Nomenclatura de plug-ins check_* incompatível com o upstream"
 
 #. Type: note
 #. Description
@@ -316,3 +312,8 @@ msgid ""
 "are shipped in this release, but will be removed in the future; see /usr/"
 "share/doc/qpsmtpd/plugins/README.check_plugins for upgrade instructions."
 msgstr ""
+"A partir de 0.94, o qpsmtpd renomeou os plug-ins check_* para versões "
+"atualizadas que não possuem o prefixo check_ em seus nomes. Os wrappers que "
+"reativam os nomes antigos são enviados nesta versão, mas serão removidos no "
+"futuro; consulte /usr/share/doc /qpsmtpd/plugins/README.check_plugins para "
+"obter instruções de atualização."

@@ -1,13 +1,13 @@
 # Italian translation of qpsmtpd debconf messages.
 # Copyright (C) 2012, qpsmtpd package copyright holder
 # This file is distributed under the same license as the qpsmtpd package.
-# Beatrice Torracca <beatricet@libero.it>, 2012.
+# Beatrice Torracca <beatricet@libero.it>, 2012, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: qpsmtpd\n"
 "Report-Msgid-Bugs-To: qpsmtpd@packages.debian.org\n"
-"POT-Creation-Date: 2009-12-14 01:40-0800\n"
-"PO-Revision-Date: 2012-04-09 13:35+0200\n"
+"POT-Creation-Date: 2019-01-11 10:02+0100\n"
+"PO-Revision-Date: 2020-02-29 14:28+0100\n"
 "Last-Translator: Beatrice Torracca <beatricet@libero.it>\n"
 "Language-Team: Italian <debian-l10n-italian@lists.debian.org>\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #. Type: boolean
 #. Description
@@ -84,9 +84,10 @@ msgstr ""
 "qpsmtpd gestisce due modelli per i processi per gestire le connessioni. Il "
 "modello \"forkserver\" usa un unico processo quando inattivo e fa il fork di "
 "nuovi processi per gestire le connessioni; usa meno memoria ma riduce "
-"leggermente il flusso dati del server. Il modello \"prefork\" mantiene un pool "
-"di processi inattivi disponibili per gestire le nuove connessioni, offrendo "
-"prestazioni leggermente migliori a spese di un maggior uso di memoria."
+"leggermente il flusso dati del server. Il modello \"prefork\" mantiene un "
+"pool di processi inattivi disponibili per gestire le nuove connessioni, "
+"offrendo prestazioni leggermente migliori a spese di un maggior uso di "
+"memoria."
 
 #. Type: string
 #. Description
@@ -130,8 +131,8 @@ msgid ""
 "\"127.0.0.1:2526\"."
 msgstr ""
 "Per ciascuna interfaccia si può, opzionalmente, specificare una porta su cui "
-"restare in ascolto invece della porta 25 predefinita; per farlo aggiungere "
-":<porta> dopo l'interfaccia, come in «127.0.0.1:2526»."
+"restare in ascolto invece della porta 25 predefinita; per farlo aggiungere :"
+"<porta> dopo l'interfaccia, come in «127.0.0.1:2526»."
 
 #. Type: select
 #. Description
@@ -283,8 +284,8 @@ msgstr ""
 "qpsmtpd deve accettare la posta. Questo elenco dovrebbe includere ogni nome "
 "di host o nome di dominio per i quali si desidera accettare la consegna in "
 "locale, così come ogni dominio di destinazione per il quale si vuole fare da "
-"relay di posta. In generale, se si desidera accodare la posta ricevuta in "
-"un MTA locale, questo elenco dovrebbe essere uguale a quello usato nell'MTA "
+"relay di posta. In generale, se si desidera accodare la posta ricevuta in un "
+"MTA locale, questo elenco dovrebbe essere uguale a quello usato nell'MTA "
 "(l'installatore cercherà di estrarre quell'impostazione come predefinita)."
 
 #. Type: string
@@ -296,3 +297,24 @@ msgid ""
 msgstr ""
 "Se si preferisce gestire questo elenco a mano, lasciare il campo vuoto e "
 "modificare il file /etc/qpsmtpd/rcpthosts."
+
+#. Type: note
+#. Description
+#: ../qpsmtpd.templates:9001
+msgid "Incompatible upstream naming of check_* plugins"
+msgstr "Nomi originali a monte dei plugin check_* incompatibili"
+
+#. Type: note
+#. Description
+#: ../qpsmtpd.templates:9001
+msgid ""
+"As of 0.94, qpsmtpd renamed the check_* plugins to updated versions which "
+"lack the check_ prefix in their names.  Wrappers re-enabling the old names "
+"are shipped in this release, but will be removed in the future; see /usr/"
+"share/doc/qpsmtpd/plugins/README.check_plugins for upgrade instructions."
+msgstr ""
+"A partire dalla versione 0.94, qpsmtpd ha rinominato i plugin check_* in "
+"versioni aggiornate che mancano del prefisso check_ nei loro nomi. In questo "
+"rilascio sono forniti wrapper che riabilitano i vecchi nomi, ma verranno "
+"rimossi in futuro; vedere /usr/share/doc/qpsmtpd/plugins/README."
+"check_plugins per le istruzioni sull'aggiornamento."
