@@ -1,0 +1,18 @@
+Description: Fix handling of received_line hook
+ The received line(s) returned by the hook must be prepended to the
+ header, not returned to the caller.
+Author: Peter J. Holzer <hjp@hjp.at>
+Bug-Debian: http://bugs.debian.org/933679
+Index: qpsmtpd-1.0.0/lib/Qpsmtpd/SMTP.pm
+===================================================================
+--- qpsmtpd-1.0.0.orig/lib/Qpsmtpd/SMTP.pm
++++ qpsmtpd-1.0.0/lib/Qpsmtpd/SMTP.pm
+@@ -861,7 +861,7 @@ sub received_line {
+     my ($rc, @received) =
+       $self->run_hooks("received_line", $smtp, $authheader, $sslheader);
+     if ($rc == OK) {
+-        return join("\n", @received);
++        $header_str = join("\n", @received);
+     }
+     else {    # assume $rc == DECLINED
+         $header_str =

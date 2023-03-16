@@ -1,3 +1,10 @@
+qpsmtpd (1.0.0-1) UNRELEASED; urgency=medium
+
+  * New upstream release (Closes: #684571, #916878)
+  * Fix handling of received_line hook (Closes: #933679)
+
+ -- Nick Leverton <nick@leverton.org>  Thu, 16 Mar 2023 00:21:25 +0000
+
 qpsmtpd (0.94-5) unstable; urgency=medium
 
   * QA upload.
