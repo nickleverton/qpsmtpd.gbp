@@ -1,11 +1,17 @@
-qpsmtpd (1.0.0-1~0njl.1) UNRELEASED; urgency=medium
+qpsmtpd (1.0.0-1~njl11.2) bullseye; urgency=medium
+
+  * Update to compat level 13 (no packaging change)
+  * Tidy up duplicate debian/rules lines.
+
+ -- Nick Leverton <nick@leverton.org>  Tue, 28 Mar 2023 21:55:00 +0100
+
+qpsmtpd (1.0.0-1~0njl.0) stretch-backports; urgency=medium
 
   * New upstream release (Closes: #684571, #916878)
   * Fix handling of received_line hook (Closes: #933679)
   * UPGRADING.pod now named UPGRADING.md
-  * Update to compat level 13
 
- -- Nick Leverton <nick@leverton.org>  Sat, 18 Mar 2023 01:38:30 +0000
+ -- Nick Leverton <nick@leverton.org>  Thu, 16 Mar 2023 00:21:25 +0000
 
 qpsmtpd (0.94-5) unstable; urgency=medium
 
