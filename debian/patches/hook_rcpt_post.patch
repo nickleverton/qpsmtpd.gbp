@@ -1,0 +1,34 @@
+Description: Add hook rcpt_post, to run after final RCPT disposition.
+ This hook runs after the return of hook 'rcpt', which sets the disposition (or
+ defaults it), but before the response is sent.  It can be used, for instance,
+ to capture and log RCPT failures.  This may be useful as several plugins defer
+ DENYing until RCPT stage, due to the RFCx822 protocol state definition.
+.
+ $rc is the disposition.  $msg is an arrayref of strings; the array may be empty.
+Author: Nick Leverton <nick@leverton.org>
+
+Index: qpsmtpd-1.0.0/lib/Qpsmtpd/Plugin.pm
+===================================================================
+--- qpsmtpd-1.0.0.orig/lib/Qpsmtpd/Plugin.pm
++++ qpsmtpd-1.0.0/lib/Qpsmtpd/Plugin.pm
+@@ -10,7 +10,7 @@ use Qpsmtpd::Constants;
+ our @hooks = qw(
+   logging config user_config post-fork pre-connection connect ehlo_parse ehlo
+   helo_parse helo auth_parse auth auth-plain auth-login auth-cram-md5
+-  rcpt_parse rcpt_pre rcpt mail_parse mail mail_pre
++  rcpt_parse rcpt_pre rcpt rcpt_post mail_parse mail mail_pre
+   data data_headers_end data_post_headers data_post queue_pre queue queue_post vrfy noop
+   quit reset_transaction disconnect post-connection
+   unrecognized_command deny ok received_line help
+Index: qpsmtpd-1.0.0/lib/Qpsmtpd/SMTP.pm
+===================================================================
+--- qpsmtpd-1.0.0.orig/lib/Qpsmtpd/SMTP.pm
++++ qpsmtpd-1.0.0/lib/Qpsmtpd/SMTP.pm
+@@ -483,6 +483,7 @@ sub rcpt_pre_respond {
+ sub rcpt_respond {
+     my ($self, $rc, $msg, $args) = @_;
+     my ($rcpt, $param) = @$args;
++    $self->run_hooks("rcpt_post", $rcpt, $rc, $msg);
+     if ($rc == DONE) {
+         return 1;
+     }
