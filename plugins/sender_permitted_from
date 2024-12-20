@@ -37,6 +37,37 @@ Most sites should start at level 3. It temporarily defers connections (4xx) that
 
 SPF levels above 4 are for crusaders who don't mind rejecting some valid mail when the sending server administrator hasn't dotted his i's and crossed his t's. May the deities bless their obsessive little hearts.
 
+=head2 no_dmarc_policy
+
+When used with the dmarc plugin, you don't want sender_permitted_from to reject anything, because dmarc needs to check the sender's domain policy.
+So you'll most likely have reject 1.
+But then, if the sender's domain has no dmarc policy, you might want to reject solely based on SPF result. This is what this setting is for. A first hook runs at the mail stage and evaluate SPF. Then a second hook runs at the data_post stage (after dmarc), so you have a second chance to reject.
+
+Like reject, you can set a value to indicate how agressive you want to be:
+
+  0 do not reject (default)
+  1 reject if SPF record says 'fail'
+  2 stricter reject. Also rejects 'softfail'
+  3 reject 'neutral'
+  4 reject if no SPF records, or a syntax error
+
+Just like reject, the recommanded value is 1. 2 will be a bit more agressive. 3 and 4 will most likely reject some valid emails.
+
+So, for example, you can use something like this:
+
+sender_permetted_from reject 1 no_dmarc_policy 1
+dkim reject 0
+dmarc reject 1 reporting 1
+
+Note this setting will only have effect if:
+
+  * dmarc plugin is used, and loaded after sender_permetted_from in your plugin's config
+  * the reject value is either 1 or 2 (meaning, no reject at the mail stage)
+  * dmarc ran with no error
+  * the sender's domain has no dmarc policy published (that means, no _dmarc DNS entry)
+
+Note that if a domain has a dmarc "p=none" policy, then this setting has no effect. Only if there's no dmarc policy at all it'll be used.
+
 =head1 SEE ALSO
 
  http://spf.pobox.com/
@@ -82,11 +113,14 @@ sub register {
     if (!$self->{_args}{reject} && $self->qp->config('spfbehavior')) {
         $self->{_args}{reject} = $self->qp->config('spfbehavior');
     }
-    $self->register_hook('mail',      'mail_handler');
-    $self->register_hook('data_post', 'data_post_handler');
+    $self->{_args}{no_dmarc_policy} ||= 0;
+    $self->register_hook('mail', 'evaluate_spf');
+    $self->register_hook('data_post_headers', 'add_spf_header');
+    $self->register_hook('data_post', 'no_dmarc_policy') if $self->{_args}{no_dmarc_policy} > 0;
+
 }
 
-sub mail_handler {
+sub evaluate_spf {
     my ($self, $transaction, $sender, %param) = @_;
 
     if ( $self->is_immune() ) {
@@ -95,7 +129,7 @@ sub mail_handler {
                 scope  => 'mfrom',
                 result => 'pass',
                 } );
-        return (DECLINED);
+        return DECLINED;
     };
 
     my $format = $sender->format;
@@ -105,7 +139,7 @@ sub mail_handler {
                 scope  => 'helo',
                 result => 'none',
                 } );
-        return (DECLINED, "SPF - null sender");
+        return DECLINED, "SPF - null sender";
     }
 
     my $from      = $sender->user . '@' . lc($sender->host);
@@ -147,8 +181,8 @@ sub mail_handler {
 
     if (!$code) {
         $self->log(LOGINFO, "fail, no response");
-        return (DENYSOFT, "SPF - no response") if $reject >= 2;
-        return (DECLINED, "SPF - no response");
+        return DENYSOFT, "SPF - no response" if $reject >= 2;
+        return DECLINED, "SPF - no response";
     }
 
     $transaction->notes('dmarc_spf', {
@@ -163,12 +197,12 @@ sub mail_handler {
         $self->adjust_karma(1);
         $transaction->notes('spf_pass_host', lc $sender->host);
         $self->log(LOGINFO, "pass, $why");
-        return (DECLINED);
+        return DECLINED;
     }
 
     if (!$reject) {
         $self->log(LOGINFO, "skip, tolerated ($code: $why)");
-        return (DECLINED, "SPF - $code: $why");
+        return DECLINED, "SPF - $code: $why";
     }
 
    # SPF result codes: pass fail softfail neutral none error permerror temperror
@@ -179,27 +213,72 @@ sub mail_handler {
     if ($code eq 'neutral') {
         if ($reject >= 5 ) {
             $self->log(LOGINFO, "fail, $code, $why");
-            return (DENY, "SPF - $code: $why");
+            return DENY, "SPF - $code: $why";
         };
         $self->log(LOGINFO, "fail, tolerated, $code, $why");
-        return (DECLINED);
+        return DECLINED;
     }
     if ($code =~ /(?:permerror|error)/ ) {
         $self->log(LOGINFO, "fail, $code, $why") if $reject > 3;
-        return (DENY,     "SPF - $code: $why") if $reject >= 6;
-        return (DENYSOFT, "SPF - $code: $why") if $reject > 3;
+        return DENY,     "SPF - $code: $why" if $reject >= 6;
+        return DENYSOFT, "SPF - $code: $why" if $reject > 3;
         $self->log(LOGINFO, "fail, tolerated, $code, $why");
-        return (DECLINED);
+        return DECLINED;
     }
     if ($code eq 'temperror') {
         $self->log(LOGINFO, "fail, $code, $why");
-        return (DENYSOFT, "SPF - $code: $why") if $reject >= 2;
+        return DENYSOFT, "SPF - $code: $why" if $reject >= 2;
         $self->log(LOGINFO, "fail, tolerated, $code, $why");
-        return (DECLINED);
+        return DECLINED;
     }
 
     $self->log(LOGINFO, "SPF from $from was $code: $why");
-    return (DECLINED);
+    return DECLINED;
+}
+
+sub no_dmarc_policy {
+    my ($self, $transaction) = @_;
+    return DECLINED if $self->is_immune;
+    unless ($self->{_args}{no_dmarc_policy}){
+        return DECLINED;
+    }
+    if ($transaction->notes('spfquery') && $transaction->notes('dmarc_result')){
+        my $spf_result  = $transaction->notes('spfquery')->code;
+        my $why         = $transaction->notes('spfquery')->local_explanation;
+        my $dmarc_dispo = $transaction->notes('dmarc_result')->disposition;
+        return DECLINED unless $dmarc_dispo eq 'none';
+        my $comment = '';
+        if ($transaction->notes('dmarc_result')->reason &&
+            $transaction->notes('dmarc_result')->reason->[0] &&
+            $transaction->notes('dmarc_result')->reason->[0]->comment){
+            $comment = $transaction->notes('dmarc_result')->reason->[0]->comment;
+        }
+        return DECLINED unless $comment eq 'no policy';
+        # No SPF or syntaxe error: reject if no_dmarc_policy is at least 4
+        if ((!$spf_result || $spf_result =~ m/(?:permerror|error|none)/) && $self->{_args}{no_dmarc_policy} >= 4){
+            $self->log(LOGINFO, "fail, $spf_result, $why");
+            return DENY, "SPF - $spf_result: $why";
+        }
+        # All other reject levels require an SPF code
+        return DECLINED unless $spf_result;
+        # Neutral
+        if ($spf_result eq 'neutral' && $self->{_args}{no_dmarc_policy} >= 3){
+            $self->log(LOGINFO, "fail, $spf_result, $why");
+            return DENY, "SPF - $spf_result: $why";
+        }
+        # Softfail
+        if ($spf_result eq 'softfail' && $self->{_args}{no_dmarc_policy} >= 2){
+            $self->log(LOGINFO, "fail, $spf_result, $why");
+            return DENY, "SPF - $spf_result: $why";
+        }
+        # Fail
+        if ($spf_result eq 'fail' && $self->{_args}{no_dmarc_policy} >= 1){
+            $self->log(LOGINFO, "fail, $spf_result, $why");
+            return DENY, "SPF - $spf_result: $why";
+        }
+    }
+    $self->log(LOGINFO, 'pass');
+    return DECLINED;
 }
 
 sub handle_code_none {
@@ -207,7 +286,7 @@ sub handle_code_none {
 
     if ($reject >= 6) {
         $self->log(LOGINFO, "fail, none, $why");
-        return (DENY, "SPF - none: $why");
+        return DENY, "SPF - none: $why";
     }
 
     $self->log(LOGINFO, "skip, tolerated, none, $why");
@@ -221,8 +300,8 @@ sub handle_code_fail {
 
     if ($reject >= 2) {
         $self->log(LOGINFO, "fail, $why");
-        return (DENY, "SPF - forgery: $why") if $reject >= 3;
-        return (DENYSOFT, "SPF - fail: $why");
+        return DENY, "SPF - forgery: $why" if $reject >= 3;
+        return DENYSOFT, "SPF - fail: $why";
     }
 
     $self->log(LOGINFO, "fail, tolerated, $why");
@@ -236,21 +315,21 @@ sub handle_code_softfail {
 
     if ($reject >= 3) {
         $self->log(LOGINFO, "fail, soft, $why");
-        return (DENY,     "SPF - fail: $why") if $reject >= 4;
-        return (DENYSOFT, "SPF - fail: $why") if $reject >= 3;
+        return DENY,     "SPF - fail: $why" if $reject >= 4;
+        return DENYSOFT, "SPF - fail: $why" if $reject >= 3;
     }
 
     $self->log(LOGINFO, "fail, tolerated, soft, $why");
     return DECLINED;
 }
 
-sub data_post_handler {
+sub add_spf_header {
     my ($self, $transaction) = @_;
 
     my $result = $transaction->notes('spfquery') or return DECLINED;
 
-    # if we skipped processing in mail_handler, we should skip here too
-    return (DECLINED) if $self->is_immune();
+    # if we skipped processing in evaluate_spf, we should skip here too
+    return DECLINED if $self->is_immune();
 
     $self->log(LOGDEBUG, "result was $result->code");
 
