@@ -1,3 +1,11 @@
+qpsmtpd (1.0.0-2~njl12+2) bookworm; urgency=medium
+
+  * Import upstream commit d3cf60d2 as patch forkserver-load-plugins.patch.
+  * New patch tcpserver-fix-tcp-environ.patch: add TCPLOCAlPORT and
+    TCPREMOTEPORT to tcpserver environment as per tcp-environ(5).
+
+ -- Nick Leverton <nick@leverton.org>  Sat, 21 Dec 2024 20:07:45 +0000
+
 qpsmtpd (1.0.0-2~njl12+1) bookworm-backports; urgency=medium
 
   * Add new patch 'hook_rcpt_post.patch' to implement rcpt_post hook,

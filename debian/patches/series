@@ -3,3 +3,5 @@ auth_ldap_bind-syntax.patch
 pre0.94-checkplugins.patch
 received_line_hook.diff
 hook_rcpt_post.patch
+tcpserver-fix-tcp-environ.patch
+forkserver-load-plugins.patch

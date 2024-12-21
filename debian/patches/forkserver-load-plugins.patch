@@ -1,0 +1,23 @@
+commit d3cf60d2c816957c6c959438b9707ad581459ff7
+Author: Andreas Erhard <85556911+wornet-aer@users.noreply.github.com>
+Date:   Tue Sep 12 17:10:09 2023 +0200
+
+    Load plugins in qpsmtpd-forkserver at startup again (#311)
+    
+    Removes the comment from line 196, which enables the loading of plugins at startup again. Otherwise there would have been the need for a SIGHUP in order to load the plugins initially.
+    
+    Closes #308 and #288.
+
+diff --git a/qpsmtpd-forkserver b/qpsmtpd-forkserver
+index f0f9e58..ef151a6 100755
+--- a/qpsmtpd-forkserver
++++ b/qpsmtpd-forkserver
+@@ -193,7 +193,7 @@ POSIX::setgid($qgid) or die "unable to change gid: $!\n";
+ POSIX::setuid($quid) or die "unable to change uid: $!\n";
+ $> = $quid;
+ 
+-#$qpsmtpd->load_plugins;
++$qpsmtpd->load_plugins;
+ 
+ foreach my $addr (@LISTENADDR) {
+     ::log(LOGINFO, "Listening on $addr->{addr}:$addr->{port}");

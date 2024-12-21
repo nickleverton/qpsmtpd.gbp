@@ -84,9 +84,6 @@ binary-indep: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-	echo Files:
-	find |sort
-	echo ------
 .PHONY: clean build binary-indep binary-arch binary
 
 # vi:set noexpandtab:
