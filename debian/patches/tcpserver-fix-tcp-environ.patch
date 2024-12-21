@@ -1,0 +1,32 @@
+commit 79948a08ba6900cf716a4f3108a5fcb4794185ff (HEAD -> local)
+Author: Nick Leverton <nick@leverton.org>
+Date:   Sat Dec 21 19:51:57 2024 +0000
+
+    tcpserver, forkserver: setup TCPLOCALPORT and TCPREMOTEPORT also.
+    
+    These are mandated by tcp-environ(5) and in fact Qpsmtpd::TcpServer uses them.
+
+diff --git a/qpsmtpd-forkserver b/qpsmtpd-forkserver
+index f0f9e58..ac08caa 100755
+--- a/qpsmtpd-forkserver
++++ b/qpsmtpd-forkserver
+@@ -303,6 +303,7 @@ while (1) {
+         # set enviroment variables
+         ($ENV{TCPLOCALIP}, $ENV{TCPREMOTEIP}, $ENV{TCPREMOTEHOST}) =
+           $qpsmtpd->tcpenv($nto_laddr, $nto_iaddr);
++        ($ENV{TCPLOCALPORT}, $ENV{TCPREMOTEPORT}) = ($lport, $port);
+ 
+         # don't do this!
+         #$0 = "qpsmtpd-forkserver: $ENV{TCPREMOTEIP} / $ENV{TCPREMOTEHOST}";
+diff --git a/qpsmtpd-prefork b/qpsmtpd-prefork
+index f05dfd2..7ffb88d 100755
+--- a/qpsmtpd-prefork
++++ b/qpsmtpd-prefork
+@@ -731,6 +731,7 @@ sub qpsmtpd_session {
+     # set enviroment variables
+     ($ENV{TCPLOCALIP}, $ENV{TCPREMOTEIP}, $ENV{TCPREMOTEHOST}) =
+       $qpsmtpd->tcpenv($nto_laddr, $nto_iaddr);
++    ($ENV{TCPLOCALPORT}, $ENV{TCPREMOTEPORT}) = ($lport, $client->peerport);
+ 
+     # run qpmsptd functions
+     $SIG{__DIE__} = 'DEFAULT';
