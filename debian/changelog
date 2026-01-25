@@ -1,3 +1,9 @@
+qpsmtpd (1.0.0-3~njl13) trixie; urgency=medium
+
+  * Add systemd unit file
+
+ -- Nick Leverton <nick@leverton.org>  Sun, 25 Jan 2026 11:39:37 +0000
+
 qpsmtpd (1.0.0-2~njl12+2) bookworm; urgency=medium
 
   * Import upstream commit d3cf60d2 as patch forkserver-load-plugins.patch.

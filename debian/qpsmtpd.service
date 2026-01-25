@@ -1,0 +1,27 @@
+[Unit]
+Description=qpsmtpd ESMTP server
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=qpsmtpd/qpsmtpd.pid
+RuntimeDirectory=qpsmtpd
+RuntimeDirectoryMode=2755
+
+Environment=ENABLED=false
+Environment=INTERFACES=
+Environment=PORT=25
+Environment=QPSMTPD_CONFIG="/etc/qpsmtpd"
+Environment=RUNAS=qpsmtpd
+Environment=SERVER=forkserver
+# EXTRA_ARGS can be supplied from a systemd drop-in, see "man systemctl"
+Environment=EXTRA_ARGS=
+EnvironmentFile=-/etc/qpsmtpd/debconf-settings
+
+ExecCondition=/usr/bin/test x${ENABLED} = xtrue -o x${ENABLED} = x1
+ExecStart=dash -c 'chown ${RUNAS}:adm ${RUNTIME_DIRECTORY}; exec /usr/bin/qpsmtpd-${SERVER} --port ${PORT} --user ${RUNAS} --pid-file ${PIDFILE} ${INTERFACES:+--listen-address $INTERFACES} --detach ${EXTRA_ARGS}'
+
+[Install]
+WantedBy=multi-user.target
+
+

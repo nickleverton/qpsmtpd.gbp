@@ -25,6 +25,7 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_installdirs
+	dh_installsystemd
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/qpsmtpd
 	# Comment out this line to omit the usual deletion of the qpsmtpd
 	# tcpserver-based toplevel script.  The standard install uses
