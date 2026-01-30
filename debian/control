@@ -1,7 +1,7 @@
 Source: qpsmtpd
 Section: mail
 Priority: optional
-Build-Depends: debhelper (>> 9), perl
+Build-Depends: debhelper-compat (= 13), perl
 Maintainer: Debian QA Group <packages@qa.debian.org>
 Standards-Version: 3.9.6
 

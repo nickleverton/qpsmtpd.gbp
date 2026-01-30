@@ -1,0 +1,5 @@
+# All will be chowned/chmodded by postinst
+var/spool/qpsmtpd
+var/log/qpsmtpd
+var/lib/qpsmtpd
+var/lib/qpsmtpd/greylisting

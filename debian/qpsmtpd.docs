@@ -1,0 +1,3 @@
+docs/*
+UPGRADING.md
+debian/README.check_plugins

@@ -1,3 +1,9 @@
+qpsmtpd (1.0.0-3.1~njl13) UNRELEASED; urgency=medium
+
+  * Debhelperise debian/rules (packaging change only).
+
+ -- Nick Leverton <nick@leverton.org>  Fri, 30 Jan 2026 18:37:35 +0000
+
 qpsmtpd (1.0.0-3~njl13) trixie; urgency=medium
 
   * Add systemd unit file
